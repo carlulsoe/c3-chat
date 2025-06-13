@@ -9,7 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { ChevronUp, Search, Paperclip, Sparkles, Compass, Code, BookOpen, ChevronDown } from "lucide-react"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent } from "@radix-ui/react-dropdown-menu"
 import { useUser } from "@clerk/nextjs"
-import { InputBox } from "./input-box"
+import ChatBox from "./chat-box"
 
 interface ChatAreaProps {
     selectedChat: string | null
@@ -35,7 +35,9 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
         "What is the meaning of life?",
     ]
 
-
+    const handleSendMessage = (message: string) => {
+        setMessages([...messages, { id: Date.now().toString(), content: message, isUser: true }])
+    }
 
     return (
         <div className="flex-1 flex flex-col w-full h-full p-4 pt-8" >
@@ -92,7 +94,7 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
                     </div>
                 )}
             </ScrollArea>
-            <InputBox inputValue={inputValue} setInputValue={setInputValue} />
+            <ChatBox inputValue={inputValue} setInputValue={setInputValue} onSendMessage={handleSendMessage} />
         </div>
     )
 }
