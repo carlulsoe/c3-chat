@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <main className="flex flex-col gap-4 w-full h-full">
       <Authenticated>
-        <ChatInterface />
+        <ChatInterface messages={[]} />
       </Authenticated>
       <Unauthenticated>
         <SignInForm />

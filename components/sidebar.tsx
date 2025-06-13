@@ -14,16 +14,11 @@ import {
     SidebarMenuItem,
     SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { PinIcon, Search } from "lucide-react"
-import React from "react"
+import React, { useState } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
 
-interface SidebarProps {
-    onSelectChat: (chatId: string) => void
-    selectedChat: string | null
-}
 
 interface ChatItem {
     id: string
@@ -32,8 +27,10 @@ interface ChatItem {
     lastUpdated: Date
 }
 
-export function AppSidebar({ onSelectChat, selectedChat }: SidebarProps) {
+export function AppSidebar() {
     const { user } = useUser()
+
+    const [selectedChat, setSelectedChat] = useState<string | null>(null)
     // Mock data for chat threads
     const pinnedChats: ChatItem[] = [
         { id: "1", title: "Starfinder Mechanic Class Q...", isPinned: true, lastUpdated: new Date() },
@@ -94,7 +91,7 @@ export function AppSidebar({ onSelectChat, selectedChat }: SidebarProps) {
                                         asChild
                                         isActive={selectedChat === chat.id}
                                     >
-                                        <button onClick={() => onSelectChat(chat.id)}>
+                                        <button onClick={() => setSelectedChat(chat.id)}>
                                             <span className="truncate">{chat.title}</span>
                                         </button>
                                     </SidebarMenuButton>
@@ -113,7 +110,7 @@ export function AppSidebar({ onSelectChat, selectedChat }: SidebarProps) {
                                         asChild
                                         isActive={selectedChat === chat.id}
                                     >
-                                        <button onClick={() => onSelectChat(chat.id)}>
+                                        <button onClick={() => setSelectedChat(chat.id)}>
                                             <span className="truncate">{chat.title}</span>
                                         </button>
                                     </SidebarMenuButton>
@@ -132,7 +129,7 @@ export function AppSidebar({ onSelectChat, selectedChat }: SidebarProps) {
                                         asChild
                                         isActive={selectedChat === chat.id}
                                     >
-                                        <button onClick={() => onSelectChat(chat.id)}>
+                                        <button onClick={() => setSelectedChat(chat.id)}>
                                             <span className="truncate">{chat.title}</span>
                                         </button>
                                     </SidebarMenuButton>

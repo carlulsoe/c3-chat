@@ -10,22 +10,21 @@ import { ChevronUp, Search, Paperclip, Sparkles, Compass, Code, BookOpen, Chevro
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent } from "@radix-ui/react-dropdown-menu"
 import { useUser } from "@clerk/nextjs"
 import ChatBox from "./chat-box"
+import { api } from "@/convex/_generated/api"
+import { useMutation } from 'convex/react';
+import { Id } from "@/convex/_generated/dataModel"
+import router from "next/router"
+import { Doc } from "@/convex/_generated/dataModel"
 
 interface ChatAreaProps {
-    selectedChat: string | null
+    messages: Doc<"threadMessage">[]
 }
 
-
-interface Message {
-    id: string
-    content: string
-    isUser: boolean
-}
-
-export function ChatArea({ selectedChat }: ChatAreaProps) {
-    const [messages, setMessages] = useState<Message[]>([])
+export function ChatArea({ messages }: ChatAreaProps) {
     const [inputValue, setInputValue] = useState("")
     const user = useUser()
+    const addMessage = useMutation(api.chat.addMessage)
+    const createThread = useMutation(api.chat.createThread)
 
     // Example questions shown in the UI
     const exampleQuestions = [
@@ -35,8 +34,23 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
         "What is the meaning of life?",
     ]
 
-    const handleSendMessage = (message: string) => {
-        setMessages([...messages, { id: Date.now().toString(), content: message, isUser: true }])
+    const handleSendMessage = async (message: string) => {
+        // if inputValue is empty, return
+        if (inputValue.length === 0) {
+            return
+        }
+        // if there are no messages, create a new thread
+        if (messages.length === 0) {
+            const threadId = await createThread()
+            await addMessage({ threadId, message, role: "user" })
+            router.push(`/chat/${threadId}`)
+        }
+        // if there are messages, add message to thread
+        if (messages.length > 0) {
+            const threadId = messages[0].threadId as Id<"thread">
+            await addMessage({ threadId, message, role: "user" })
+            router.push(`/chat/${threadId}`)
+        }
     }
 
     return (
@@ -83,11 +97,11 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
                 ) : (
                     <div className="space-y-6 w-full max-w-3xl mx-auto">
                         {messages.map((message) => (
-                            <div key={message.id} className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}>
+                            <div key={message._id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                                 <div
                                     className={`max-w-[80%] p-5 rounded-lg bg-muted text-foreground justify-start`}
                                 >
-                                    {message.content}
+                                    {message.message}
                                 </div>
                             </div>
                         ))}

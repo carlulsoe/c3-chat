@@ -1,7 +1,6 @@
 import {
   PersistentTextStreaming,
   StreamId,
-  StreamIdValidator,
 } from "@convex-dev/persistent-text-streaming";
 import { components } from "./_generated/api";
 import { v } from "convex/values";
@@ -13,7 +12,6 @@ const persistentTextStreaming = new PersistentTextStreaming(
 
 // Create a new chat thread
 export const createThread = mutation({
-  args: {},
   handler: async (ctx) => {
     const now = Date.now();
     const threadId = await ctx.db.insert("thread", {
