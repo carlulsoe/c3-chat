@@ -12,6 +12,7 @@ export const thread = defineTable({
       messageId: v.id("threadMessage"),
     }),
   ),
+  userId: v.string(),
   createdAt: v.number(),
   updatedAt: v.number(),
 });

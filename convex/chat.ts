@@ -5,6 +5,7 @@ import {
 import { components } from "./_generated/api";
 import { v } from "convex/values";
 import { httpAction, mutation, query } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
 
 const persistentTextStreaming = new PersistentTextStreaming(
   components.persistentTextStreaming,
@@ -13,11 +14,16 @@ const persistentTextStreaming = new PersistentTextStreaming(
 // Create a new chat thread
 export const createThread = mutation({
   handler: async (ctx) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
     const now = Date.now();
     const threadId = await ctx.db.insert("thread", {
       messages: [],
       createdAt: now,
       updatedAt: now,
+      userId: user.subject,
     });
     return threadId;
   },
@@ -32,13 +38,21 @@ export const addMessage = mutation({
   },
   handler: async (ctx, args) => {
     // Insert message
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+    // check if user is the owner of the thread
+    const thread = await ctx.db.get(args.threadId);
+    if (thread?.userId !== user.subject) {
+      throw new Error("User not authorized to add message to this thread");
+    }
     const messageId = await ctx.db.insert("threadMessage", {
       threadId: args.threadId,
       message: args.message,
       role: args.role,
     });
     // Update thread's messages array
-    const thread = await ctx.db.get(args.threadId);
     if (thread) {
       await ctx.db.patch(args.threadId, {
         messages: [...thread.messages, { role: args.role, messageId }],
@@ -53,8 +67,15 @@ export const addMessage = mutation({
 export const getMessages = query({
   args: { threadId: v.id("thread") },
   handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
     const thread = await ctx.db.get(args.threadId);
     if (!thread) return [];
+    if (thread?.userId !== user.subject) {
+      throw new Error("User not authorized to get messages from this thread");
+    }
     // Fetch all messages by their IDs
     const messages = await Promise.all(
       thread.messages.map(async (m) => {
@@ -68,6 +89,10 @@ export const getMessages = query({
 
 // Streaming logic (unchanged for now)
 export const streamChat = httpAction(async (ctx, request) => {
+  const user = await ctx.auth.getUserIdentity();
+  if (!user) {
+    throw new Error("User not authenticated");
+  }
   const body = (await request.json()) as { streamId: string };
   const generateChat = async (
     ctx: any,
