@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ChevronUp, Search, Paperclip, Sparkles, Compass, Code, BookOpen, ChevronDown } from "lucide-react"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent } from "@radix-ui/react-dropdown-menu"
 
 interface ChatAreaProps {
     selectedChat: string | null
@@ -60,7 +61,7 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
             <ScrollArea className="flex-1 p-4">
                 {messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center">
-                        <h1 className="text-2xl font-bold mb-8 text-white">How can I help you, Carl?</h1>
+                        <h1 className="text-2xl font-bold mb-8">How can I help you, Carl?</h1>
 
                         <div className="flex gap-4 mb-12">
                             <Button variant="outline" className="flex flex-col h-20 w-24 items-center justify-center gap-2">
@@ -86,7 +87,7 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
                                 <Button
                                     key={index}
                                     variant="ghost"
-                                    className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-800"
+                                    className="w-full justify-start text-foreground hover:bg-muted"
                                     onClick={() => {
                                         setInputValue(question)
                                     }}
@@ -101,7 +102,7 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
                         {messages.map((message) => (
                             <div key={message.id} className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}>
                                 <div
-                                    className={`max-w-[80%] p-3 rounded-lg ${message.isUser ? "bg-primary text-white" : "bg-gray-800 text-white"}`}
+                                    className={`max-w-[80%] p-3 rounded-lg ${message.isUser ? "bg-primary text-foreground" : "bg-muted text-foreground"}`}
                                 >
                                     {message.content}
                                 </div>
@@ -117,14 +118,24 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         placeholder="Type your message here..."
-                        className="pr-24 py-6 bg-gray-800 border-gray-700"
+                        className="pr-24 py-6 bg-muted border-border"
                     />
 
                     <div className="absolute right-2 bottom-2 flex items-center gap-2">
-                        <div className="flex items-center gap-1 bg-gray-700 rounded-md px-2 py-1">
-                            <span className="text-sm text-gray-300">Gemini 2.5 Flash</span>
-                            <ChevronDown className="h-4 w-4 text-gray-400" />
-                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                >
+                                    <span className="text-sm text-muted-foreground">Gemini 2.5 Flash</span>
+                                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent side="top" align="end">
+                                <DropdownMenuItem>Gemini 2.5 Flash</DropdownMenuItem>
+                                <DropdownMenuItem>GPT-4 Turbo</DropdownMenuItem>
+                                <DropdownMenuItem>Claude 3 Opus</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
                         <Button type="button" size="icon" variant="ghost">
                             <Search className="h-5 w-5" />

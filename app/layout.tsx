@@ -4,6 +4,8 @@ import "./globals.css";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/ui/theme-provider"
+import { SidebarProvider } from "@/components/ui/sidebar";
+import AppSidebar from "@/components/sidebar";
 
 export const metadata = {
   title: "C3 Chat",
@@ -38,7 +40,9 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              {children}
+              <SidebarProvider>
+                {children}
+              </SidebarProvider>
             </ThemeProvider>
           </ConvexClientProvider>
         </ClerkProvider>

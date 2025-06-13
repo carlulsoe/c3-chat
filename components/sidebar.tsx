@@ -1,11 +1,23 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarHeader,
+    SidebarInput,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarTrigger,
+} from "@/components/ui/sidebar"
 import { Avatar } from "@/components/ui/avatar"
-import { Search, PinIcon, Menu } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { PinIcon, Search } from "lucide-react"
+import React from "react"
 
 interface SidebarProps {
     onSelectChat: (chatId: string) => void
@@ -19,9 +31,7 @@ interface ChatItem {
     lastUpdated: Date
 }
 
-export function Sidebar({ onSelectChat, selectedChat }: SidebarProps) {
-    const [isOpen, setIsOpen] = useState(true)
-
+export function AppSidebar({ onSelectChat, selectedChat }: SidebarProps) {
     // Mock data for chat threads
     const pinnedChats: ChatItem[] = [
         { id: "1", title: "Starfinder Mechanic Class Q...", isPinned: true, lastUpdated: new Date() },
@@ -54,94 +64,95 @@ export function Sidebar({ onSelectChat, selectedChat }: SidebarProps) {
     ]
 
     return (
-        <div
-            className={`border-r border-gray-800 flex flex-col ${isOpen ? "w-60" : "w-0"} transition-all duration-300`}
-        >
-            {isOpen && (
-                <>
-                    <div className="p-4 flex items-center justify-between">
-                        <h1 className="text-lg font-semibold text-white">T3.chat</h1>
-                        <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
-                            <Menu className="h-5 w-5" />
-                        </Button>
-                    </div>
-
-                    <div className="px-4 pb-2">
-                        <Button className="w-full bg-primary hover:bg-primary/90 text-white">New Chat</Button>
-                    </div>
-
-                    <div className="px-4 py-2 relative">
-                        <Search className="absolute left-6 top-[14px] h-4 w-4 text-gray-400" />
-                        <Input placeholder="Search your threads..." className="pl-8 bg-background/20 border-gray-700" />
-                    </div>
-
-                    <ScrollArea className="flex-1">
-                        <div className="px-2">
-                            <div className="py-2">
-                                <div className="flex items-center px-2 py-1 text-xs text-gray-400">
-                                    <PinIcon className="h-3 w-3 mr-1" /> Pinned
-                                </div>
-                                {pinnedChats.map((chat) => (
-                                    <Button
-                                        key={chat.id}
-                                        variant={selectedChat === chat.id ? "secondary" : "ghost"}
-                                        className="w-full justify-start text-sm font-normal py-2 h-auto"
-                                        onClick={() => onSelectChat(chat.id)}
-                                    >
-                                        <span className="truncate">{chat.title}</span>
-                                    </Button>
-                                ))}
-                            </div>
-
-                            <div className="py-2">
-                                <div className="px-2 py-1 text-xs text-gray-400">Last 7 Days</div>
-                                {recentChats.map((chat) => (
-                                    <Button
-                                        key={chat.id}
-                                        variant={selectedChat === chat.id ? "secondary" : "ghost"}
-                                        className="w-full justify-start text-sm font-normal py-2 h-auto"
-                                        onClick={() => onSelectChat(chat.id)}
-                                    >
-                                        <span className="truncate">{chat.title}</span>
-                                    </Button>
-                                ))}
-                            </div>
-
-                            <div className="py-2">
-                                <div className="px-2 py-1 text-xs text-gray-400">Last 30 Days</div>
-                                {olderChats.map((chat) => (
-                                    <Button
-                                        key={chat.id}
-                                        variant={selectedChat === chat.id ? "secondary" : "ghost"}
-                                        className="w-full justify-start text-sm font-normal py-2 h-auto"
-                                        onClick={() => onSelectChat(chat.id)}
-                                    >
-                                        <span className="truncate">{chat.title}</span>
-                                    </Button>
-                                ))}
-                            </div>
+        <Sidebar>
+            <SidebarHeader>
+                <SidebarTrigger />
+                <div className="flex items-center justify-between px-2 py-1">
+                    <h1 className="text-lg font-semibold text-white">C3 Chat</h1>
+                    {/* You can add a trigger or logo here if needed */}
+                </div>
+                <Button className="w-full bg-primary hover:bg-primary/90 text-white mt-2">New Chat</Button>
+                <div className="relative mt-2">
+                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <SidebarInput placeholder="Search your threads..." className="pl-8" />
+                </div>
+            </SidebarHeader>
+            <SidebarContent>
+                <SidebarGroup>
+                    <SidebarGroupLabel>
+                        <div className="flex items-center text-xs text-gray-400">
+                            <PinIcon className="h-3 w-3 mr-1" /> Pinned
                         </div>
-                    </ScrollArea>
-
-                    <div className="p-4 border-t border-gray-800">
-                        <div className="flex items-center">
-                            <Avatar className="h-8 w-8 bg-primary text-white">
-                                <span>C</span>
-                            </Avatar>
-                            <div className="ml-2">
-                                <div className="text-sm font-medium">Carl U. Christensen</div>
-                                <div className="text-xs text-gray-400">Pro</div>
-                            </div>
-                        </div>
+                    </SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            {pinnedChats.map((chat) => (
+                                <SidebarMenuItem key={chat.id}>
+                                    <SidebarMenuButton
+                                        asChild
+                                        isActive={selectedChat === chat.id}
+                                    >
+                                        <button onClick={() => onSelectChat(chat.id)}>
+                                            <span className="truncate">{chat.title}</span>
+                                        </button>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+                <SidebarGroup>
+                    <SidebarGroupLabel>Last 7 Days</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            {recentChats.map((chat) => (
+                                <SidebarMenuItem key={chat.id}>
+                                    <SidebarMenuButton
+                                        asChild
+                                        isActive={selectedChat === chat.id}
+                                    >
+                                        <button onClick={() => onSelectChat(chat.id)}>
+                                            <span className="truncate">{chat.title}</span>
+                                        </button>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+                <SidebarGroup>
+                    <SidebarGroupLabel>Last 30 Days</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            {olderChats.map((chat) => (
+                                <SidebarMenuItem key={chat.id}>
+                                    <SidebarMenuButton
+                                        asChild
+                                        isActive={selectedChat === chat.id}
+                                    >
+                                        <button onClick={() => onSelectChat(chat.id)}>
+                                            <span className="truncate">{chat.title}</span>
+                                        </button>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+            </SidebarContent>
+            <SidebarFooter>
+                <div className="flex items-center">
+                    <Avatar className="h-8 w-8 bg-primary text-white">
+                        <span>C</span>
+                    </Avatar>
+                    <div className="ml-2">
+                        <div className="text-sm font-medium">Carl U. Christensen</div>
+                        <div className="text-xs text-gray-400">Pro</div>
                     </div>
-                </>
-            )}
-
-            {!isOpen && (
-                <Button variant="ghost" size="icon" className="m-2" onClick={() => setIsOpen(true)}>
-                    <Menu className="h-5 w-5" />
-                </Button>
-            )}
-        </div>
+                </div>
+            </SidebarFooter>
+        </Sidebar>
     )
 }
+
+export default AppSidebar;
