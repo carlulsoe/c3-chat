@@ -11,38 +11,64 @@ const persistentTextStreaming = new PersistentTextStreaming(
   components.persistentTextStreaming,
 );
 
-// Create a stream using the component and store the id in the database with
-// our chat message.
-export const createChat = mutation({
-  args: {
-    prompt: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const streamId = await persistentTextStreaming.createStream(ctx);
-    const id = await ctx.db.insert("thread", {
-      message: args.prompt,
-      role: "user",
-      threadId: streamId,
+// Create a new chat thread
+export const createThread = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const now = Date.now();
+    const threadId = await ctx.db.insert("thread", {
+      messages: [],
+      createdAt: now,
+      updatedAt: now,
     });
-    return id;
+    return threadId;
   },
 });
 
-// Create a query that returns the chat body.
-export const getChatBody = query({
+// Add a message to a thread and (optionally) stream AI response
+export const addMessage = mutation({
   args: {
-    streamId: StreamIdValidator,
+    threadId: v.id("thread"),
+    message: v.string(),
+    role: v.union(v.literal("user"), v.literal("assistant")),
   },
   handler: async (ctx, args) => {
-    return await persistentTextStreaming.getStreamBody(
-      ctx,
-      args.streamId as StreamId,
-    );
+    // Insert message
+    const messageId = await ctx.db.insert("threadMessage", {
+      threadId: args.threadId,
+      message: args.message,
+      role: args.role,
+    });
+    // Update thread's messages array
+    const thread = await ctx.db.get(args.threadId);
+    if (thread) {
+      await ctx.db.patch(args.threadId, {
+        messages: [...thread.messages, { role: args.role, messageId }],
+        updatedAt: Date.now(),
+      });
+    }
+    return messageId;
   },
 });
 
-// Create an HTTP action that generates chunks of the chat body
-// and uses the component to stream them to the client and save them to the database.
+// Fetch all messages for a thread
+export const getMessages = query({
+  args: { threadId: v.id("thread") },
+  handler: async (ctx, args) => {
+    const thread = await ctx.db.get(args.threadId);
+    if (!thread) return [];
+    // Fetch all messages by their IDs
+    const messages = await Promise.all(
+      thread.messages.map(async (m) => {
+        const msg = await ctx.db.get(m.messageId);
+        return msg ? { ...msg, role: m.role } : null;
+      }),
+    );
+    return messages.filter(Boolean);
+  },
+});
+
+// Streaming logic (unchanged for now)
 export const streamChat = httpAction(async (ctx, request) => {
   const body = (await request.json()) as { streamId: string };
   const generateChat = async (

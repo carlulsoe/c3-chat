@@ -9,7 +9,6 @@
  */
 
 import type * as chat from "../chat.js";
-import type * as myFunctions from "../myFunctions.js";
 
 import type {
   ApiFromModules,
@@ -27,7 +26,6 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   chat: typeof chat;
-  myFunctions: typeof myFunctions;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 
