@@ -5,7 +5,6 @@ import {
 import { components } from "./_generated/api";
 import { v } from "convex/values";
 import { httpAction, mutation, query } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
 
 const persistentTextStreaming = new PersistentTextStreaming(
   components.persistentTextStreaming,
@@ -44,7 +43,10 @@ export const addMessage = mutation({
     }
     // check if user is the owner of the thread
     const thread = await ctx.db.get(args.threadId);
-    if (thread?.userId !== user.subject) {
+    if (!thread) {
+      throw new Error("Thread not found");
+    }
+    if (thread.userId !== user.subject) {
       throw new Error("User not authorized to add message to this thread");
     }
     const messageId = await ctx.db.insert("threadMessage", {
