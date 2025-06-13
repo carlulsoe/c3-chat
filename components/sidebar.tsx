@@ -18,6 +18,8 @@ import { Button } from "@/components/ui/button"
 import { PinIcon, Search } from "lucide-react"
 import React, { useState } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 
 interface ChatItem {
@@ -29,6 +31,7 @@ interface ChatItem {
 
 export function AppSidebar() {
     const { user } = useUser()
+    const pathname = usePathname() // Get current pathname
 
     const [selectedChat, setSelectedChat] = useState<string | null>(null)
     // Mock data for chat threads
@@ -77,6 +80,25 @@ export function AppSidebar() {
                 </div>
             </SidebarHeader>
             <SidebarContent>
+                <SidebarGroup>
+                    <SidebarGroupLabel>Resources</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <Link href="/llms" passHref legacyBehavior>
+                                    <SidebarMenuButton
+                                        asChild
+                                        isActive={pathname === '/llms'}
+                                    >
+                                        <a className="flex items-center">
+                                            <span className="truncate">Model Overview</span>
+                                        </a>
+                                    </SidebarMenuButton>
+                                </Link>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
                 <SidebarGroup>
                     <SidebarGroupLabel>
                         <div className="flex items-center text-xs text-gray-400">
