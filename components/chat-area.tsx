@@ -40,9 +40,9 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
     }
 
     return (
-        <div className="flex-1 flex flex-col w-full h-full p-4 pt-8" >
+        <div className="flex-1 flex flex-col w-full h-full pt-8" >
             <ScrollArea className="flex-1">
-                {messages.length === 0 ? (
+                {messages.length === 0 && inputValue.length === 0 ? (
                     <div className="flex flex-col items-center justify-center">
                         <h1 className="text-2xl font-bold mb-8">How can I help you, {user.user?.firstName}?</h1>
 
@@ -65,7 +65,7 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
                             </Button>
                         </div>
 
-                        <div className="space-y-4 w-full max-w-md">
+                        <div className="space-y-4 w-full max-w-md mx-auto p-4">
                             {exampleQuestions.map((question, index) => (
                                 <Button
                                     key={index}

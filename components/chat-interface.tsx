@@ -12,8 +12,10 @@ export default function ChatInterface() {
             <div className="pl-2 py-3">
                 <SidebarTrigger />
             </div>
-            <AppSidebar onSelectChat={setSelectedChat} selectedChat={selectedChat} />
-            <ChatArea selectedChat={selectedChat} />
+            <div className="flex flex-col w-full h-full">
+                <AppSidebar onSelectChat={setSelectedChat} selectedChat={selectedChat} />
+                <ChatArea selectedChat={selectedChat} />
+            </div>
         </div>
     )
 }

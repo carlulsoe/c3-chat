@@ -44,7 +44,6 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <SidebarProvider defaultOpen={defaultOpen}>
-
                 {children}
               </SidebarProvider>
             </ThemeProvider>

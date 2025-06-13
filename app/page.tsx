@@ -8,7 +8,6 @@ import {
 import { SignUpButton } from "@clerk/nextjs";
 import { SignInButton } from "@clerk/nextjs";
 import ChatInterface from "@/components/chat-interface";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function Home() {
   return (
