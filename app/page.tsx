@@ -7,25 +7,21 @@ import {
 
 import { SignUpButton } from "@clerk/nextjs";
 import { SignInButton } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
 import ChatInterface from "@/components/chat-interface";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 
 export default function Home() {
+  const { open, toggleSidebar } = useSidebar()
   return (
-    <>
-      <header className="sticky top-0 z-10 bg-background p-4 border-b-2 border-slate-200 dark:border-slate-800 flex flex-row justify-between items-center">
-        C3 Chat
-        <UserButton />
-      </header>
-      <main className="p-8 flex flex-col gap-8">
-        <Authenticated>
-          <ChatInterface />
-        </Authenticated>
-        <Unauthenticated>
-          <SignInForm />
-        </Unauthenticated>
-      </main>
-    </>
+    <main className="p-8 flex flex-col gap-8">
+      <Authenticated>
+        {!open && <SidebarTrigger />}
+        <ChatInterface />
+      </Authenticated>
+      <Unauthenticated>
+        <SignInForm />
+      </Unauthenticated>
+    </main>
   );
 }
 

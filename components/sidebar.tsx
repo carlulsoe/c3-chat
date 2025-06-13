@@ -18,6 +18,7 @@ import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { PinIcon, Search } from "lucide-react"
 import React from "react"
+import { UserButton, useUser } from "@clerk/nextjs"
 
 interface SidebarProps {
     onSelectChat: (chatId: string) => void
@@ -32,6 +33,7 @@ interface ChatItem {
 }
 
 export function AppSidebar({ onSelectChat, selectedChat }: SidebarProps) {
+    const { user } = useUser()
     // Mock data for chat threads
     const pinnedChats: ChatItem[] = [
         { id: "1", title: "Starfinder Mechanic Class Q...", isPinned: true, lastUpdated: new Date() },
@@ -142,12 +144,9 @@ export function AppSidebar({ onSelectChat, selectedChat }: SidebarProps) {
             </SidebarContent>
             <SidebarFooter>
                 <div className="flex items-center">
-                    <Avatar className="h-8 w-8 bg-primary text-white">
-                        <span>C</span>
-                    </Avatar>
+                    <UserButton />
                     <div className="ml-2">
-                        <div className="text-sm font-medium">Carl U. Christensen</div>
-                        <div className="text-xs text-gray-400">Pro</div>
+                        <div className="text-sm font-medium">{user?.fullName}</div>
                     </div>
                 </div>
             </SidebarFooter>
