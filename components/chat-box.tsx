@@ -17,8 +17,9 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
 
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault()
-        if (inputValue.trim()) {
-            onSendMessage(inputValue)
+        const cleanedInput = inputValue.trim()
+        if (cleanedInput) {
+            onSendMessage(cleanedInput)
             setInputValue("")
         }
     }

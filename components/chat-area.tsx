@@ -81,11 +81,11 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
                         </div>
                     </div>
                 ) : (
-                    <div className="space-y-6">
+                    <div className="space-y-6 w-full max-w-3xl mx-auto">
                         {messages.map((message) => (
                             <div key={message.id} className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}>
                                 <div
-                                    className={`max-w-[80%] p-3 rounded-lg ${message.isUser ? "bg-primary text-foreground" : "bg-muted text-foreground"}`}
+                                    className={`max-w-[80%] p-5 rounded-lg bg-muted text-foreground justify-start`}
                                 >
                                     {message.content}
                                 </div>
