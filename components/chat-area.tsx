@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ChevronUp, Search, Paperclip, Sparkles, Compass, Code, BookOpen, ChevronDown } from "lucide-react"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent } from "@radix-ui/react-dropdown-menu"
+import { useUser } from "@clerk/nextjs"
 
 interface ChatAreaProps {
     selectedChat: string | null
@@ -22,6 +23,7 @@ interface Message {
 export function ChatArea({ selectedChat }: ChatAreaProps) {
     const [messages, setMessages] = useState<Message[]>([])
     const [inputValue, setInputValue] = useState("")
+    const user = useUser()
 
     // Example questions shown in the UI
     const exampleQuestions = [
@@ -57,11 +59,11 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
     }
 
     return (
-        <div className="flex-1 flex flex-col h-full">
-            <ScrollArea className="flex-1 p-4">
+        <div className="flex-1 flex flex-col w-full h-full" >
+            <ScrollArea className="flex-1">
                 {messages.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center">
-                        <h1 className="text-2xl font-bold mb-8">How can I help you, Carl?</h1>
+                    <div className="flex flex-col items-center justify-center">
+                        <h1 className="text-2xl font-bold mb-8">How can I help you, {user.user?.firstName}?</h1>
 
                         <div className="flex gap-4 mb-12">
                             <Button variant="outline" className="flex flex-col h-20 w-24 items-center justify-center gap-2">

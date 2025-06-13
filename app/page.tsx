@@ -8,14 +8,13 @@ import {
 import { SignUpButton } from "@clerk/nextjs";
 import { SignInButton } from "@clerk/nextjs";
 import ChatInterface from "@/components/chat-interface";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function Home() {
-  const { open, toggleSidebar } = useSidebar()
   return (
-    <main className="p-8 flex flex-col gap-8">
+    <main className="flex flex-col gap-4 w-full h-full">
       <Authenticated>
-        {!open && <SidebarTrigger />}
+
         <ChatInterface />
       </Authenticated>
       <Unauthenticated>
