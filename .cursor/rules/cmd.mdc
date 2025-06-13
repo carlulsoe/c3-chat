@@ -1,0 +1,6 @@
+---
+description: 
+globs: convex/*
+alwaysApply: false
+---
+Assume npx convex dev is always running and hot reloading. Do not as the user to run the command.

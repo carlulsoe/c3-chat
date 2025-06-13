@@ -3,15 +3,12 @@
 import {
   Authenticated,
   Unauthenticated,
-  useMutation,
-  useQuery,
 } from "convex/react";
-import { api } from "../convex/_generated/api";
-import Link from "next/link";
+
 import { SignUpButton } from "@clerk/nextjs";
 import { SignInButton } from "@clerk/nextjs";
 import { UserButton } from "@clerk/nextjs";
-import Chat from "../components/Chat";
+import ChatInterface from "@/components/chat-interface";
 
 export default function Home() {
   return (
@@ -22,7 +19,7 @@ export default function Home() {
       </header>
       <main className="p-8 flex flex-col gap-8">
         <Authenticated>
-          <Chat />
+          <ChatInterface />
         </Authenticated>
         <Unauthenticated>
           <SignInForm />
