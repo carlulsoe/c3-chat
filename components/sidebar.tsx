@@ -15,52 +15,36 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
-import { PinIcon, Search } from "lucide-react"
+import { Search } from "lucide-react" // PinIcon removed
 import React, { useState } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import type { Doc } from "@/convex/_generated/dataModel"
 
 
-interface ChatItem {
-    id: string
+// Adjusted ChatItem interface - isPinned is removed, title might be derived differently
+interface DisplayChatItem {
+    id: string // maps to thread._id
     title: string
-    isPinned?: boolean
-    lastUpdated: Date
+    lastUpdated: string // formatted date string
 }
 
 export function AppSidebar() {
-    const { user } = useUser()
-
+    const { user, isLoaded: isUserLoaded } = useUser()
     const [selectedChat, setSelectedChat] = useState<string | null>(null)
-    // Mock data for chat threads
-    const pinnedChats: ChatItem[] = [
-        { id: "1", title: "Starfinder Mechanic Class Q...", isPinned: true, lastUpdated: new Date() },
-        { id: "2", title: "Dreading work tomorrow", isPinned: true, lastUpdated: new Date() },
-    ]
 
-    const recentChats: ChatItem[] = [
-        { id: "3", title: "Invincible Great Purge to Ca...", lastUpdated: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) },
-        { id: "4", title: "Trouble setting up VM enviro...", lastUpdated: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000) },
-        { id: "5", title: "Myostatin Inhibitor Explanati...", lastUpdated: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) },
-        { id: "6", title: "Myostatin Inhibitor Explanati...", lastUpdated: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000) },
-        { id: "7", title: "AI Goal to Plan Tool with Nex...", lastUpdated: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-    ]
+    // Fetch threads if user is loaded
+    const threads = useQuery(api.chat.getUserThreads, user ? undefined : "skip")
 
-    const olderChats: ChatItem[] = [
-        { id: "8", title: "SaaS Business Brainstorming...", lastUpdated: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000) },
-        { id: "9", title: "Excel formula for compound i...", lastUpdated: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000) },
-        {
-            id: "10",
-            title: "Nextjs default layout with cu...",
-            lastUpdated: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000),
-        },
-        { id: "11", title: "Convex schema to Zod sche...", lastUpdated: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000) },
-        { id: "12", title: "AI Business Recommendations", lastUpdated: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000) },
-        {
-            id: "13",
-            title: "AI Consultation for Workflow ...",
-            lastUpdated: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        },
-    ]
+    const formattedThreads: DisplayChatItem[] = (threads ?? []).map((thread: Doc<"thread">) => ({
+        id: thread._id,
+        // For now, using thread ID as title. A more sophisticated title can be generated later.
+        // Example: "Chat " + thread._id.substring(0, 5) + "..."
+        // Or derive from the first message if available and loaded.
+        title: `Thread ${thread._id.slice(-5)} (${new Date(thread.updatedAt).toLocaleDateString()})`,
+        lastUpdated: new Date(thread.updatedAt).toLocaleDateString(),
+    }));
 
     return (
         <Sidebar>
@@ -78,64 +62,34 @@ export function AppSidebar() {
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>
-                        <div className="flex items-center text-xs text-gray-400">
-                            <PinIcon className="h-3 w-3 mr-1" /> Pinned
-                        </div>
-                    </SidebarGroupLabel>
+                    <SidebarGroupLabel>Recent Threads</SidebarGroupLabel>
                     <SidebarGroupContent>
-                        <SidebarMenu>
-                            {pinnedChats.map((chat) => (
-                                <SidebarMenuItem key={chat.id}>
-                                    <SidebarMenuButton
-                                        asChild
-                                        isActive={selectedChat === chat.id}
-                                    >
-                                        <button onClick={() => setSelectedChat(chat.id)}>
-                                            <span className="truncate">{chat.title}</span>
-                                        </button>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-                <SidebarGroup>
-                    <SidebarGroupLabel>Last 7 Days</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {recentChats.map((chat) => (
-                                <SidebarMenuItem key={chat.id}>
-                                    <SidebarMenuButton
-                                        asChild
-                                        isActive={selectedChat === chat.id}
-                                    >
-                                        <button onClick={() => setSelectedChat(chat.id)}>
-                                            <span className="truncate">{chat.title}</span>
-                                        </button>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-                <SidebarGroup>
-                    <SidebarGroupLabel>Last 30 Days</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {olderChats.map((chat) => (
-                                <SidebarMenuItem key={chat.id}>
-                                    <SidebarMenuButton
-                                        asChild
-                                        isActive={selectedChat === chat.id}
-                                    >
-                                        <button onClick={() => setSelectedChat(chat.id)}>
-                                            <span className="truncate">{chat.title}</span>
-                                        </button>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
+                        {!isUserLoaded || threads === undefined ? (
+                            <div className="p-4 text-sm text-gray-500">Loading threads...</div>
+                        ) : formattedThreads.length === 0 ? (
+                            <div className="p-4 text-sm text-gray-500">No threads yet.</div>
+                        ) : (
+                            <SidebarMenu>
+                                {formattedThreads.map((chat) => (
+                                    <SidebarMenuItem key={chat.id}>
+                                        <SidebarMenuButton
+                                            asChild
+                                            isActive={selectedChat === chat.id}
+                                        >
+                                            <button onClick={() => setSelectedChat(chat.id)}>
+                                                <span className="truncate">{chat.title}</span>
+                                                {/*
+                                                  Optionally, display lastUpdated if needed in the item itself
+                                                  <span className="text-xs text-gray-400 ml-auto">
+                                                      {chat.lastUpdated}
+                                                  </span>
+                                                */}
+                                            </button>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        )}
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>

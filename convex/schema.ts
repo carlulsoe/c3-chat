@@ -15,7 +15,7 @@ export const thread = defineTable({
   userId: v.string(),
   createdAt: v.number(),
   updatedAt: v.number(),
-});
+}).index("by_user", ["userId", "updatedAt"]);
 
 export const threadMessage = defineTable({
   threadId: v.id("thread"),
