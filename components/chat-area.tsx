@@ -59,7 +59,7 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
     }
 
     return (
-        <div className="flex-1 flex flex-col w-full h-full" >
+        <div className="flex-1 flex flex-col w-full h-full p-4 pt-8" >
             <ScrollArea className="flex-1">
                 {messages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center">

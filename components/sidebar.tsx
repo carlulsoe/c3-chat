@@ -68,9 +68,9 @@ export function AppSidebar({ onSelectChat, selectedChat }: SidebarProps) {
     return (
         <Sidebar>
             <SidebarHeader>
-                <SidebarTrigger />
-                <div className="flex items-center justify-between px-2 py-1">
-                    <h1 className="text-lg font-semibold text-white">C3 Chat</h1>
+                <div className="flex items-center justify-between pr-2 py-1">
+                    <SidebarTrigger />
+                    <h1 className="text-lg font-semibold text-foreground">C3 Chat</h1>
                     {/* You can add a trigger or logo here if needed */}
                 </div>
                 <Button className="w-full bg-primary hover:bg-primary/90 text-white mt-2">New Chat</Button>
