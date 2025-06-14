@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { PinIcon, Search, SettingsIcon } from "lucide-react" // Assuming SettingsIcon is available, else stick to PinIcon
-import React, { useState } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
 import Link from "next/link"
 import { useParams, usePathname, useRouter } from "next/navigation"
@@ -61,6 +61,30 @@ export function AppSidebar() {
         lastUpdated: new Date(chat.updatedAt),
     }))
 
+    const sidebarContentRef = useRef<HTMLDivElement>(null)
+
+    // Infinite scroll: call loadMore when near bottom
+    useEffect(() => {
+        const handleScroll = () => {
+            const el = sidebarContentRef.current
+            if (!el) return
+            const threshold = 100 // px from bottom
+            if (el.scrollHeight - el.scrollTop - el.clientHeight < threshold) {
+                if (status === "CanLoadMore") {
+                    loadMore(20)
+                }
+            }
+        }
+        const el = sidebarContentRef.current
+        if (el) {
+            el.addEventListener("scroll", handleScroll)
+        }
+        return () => {
+            if (el) {
+                el.removeEventListener("scroll", handleScroll)
+            }
+        }
+    }, [status, loadMore])
 
     return (
         <Sidebar>
@@ -78,67 +102,69 @@ export function AppSidebar() {
                 </div>
             </SidebarHeader>
             <SidebarContent>
-                <SidebarGroup>
-                    <SidebarGroupLabel>
-                        <div className="flex items-center text-xs text-gray-400">
-                            <PinIcon className="h-3 w-3 mr-1" /> Pinned
-                        </div>
-                    </SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {pinnedThreads?.map((thread) => (
-                                <SidebarMenuItem key={thread._id.toString()}>
-                                    <SidebarMenuButton
-                                        asChild
-                                        isActive={selectedChat === thread._id.toString()}
-                                    >
-                                        <button onClick={() => handleSelectChat(thread._id.toString())}>
-                                            <span className="truncate">{thread.title}</span>
-                                        </button>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-                <SidebarGroup>
-                    <SidebarGroupLabel>Last 7 Days</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {recentThreads?.map((thread) => (
-                                <SidebarMenuItem key={thread.id}>
-                                    <SidebarMenuButton
-                                        asChild
-                                        isActive={selectedChat === thread.id}
-                                    >
-                                        <button onClick={() => handleSelectChat(thread.id)}>
-                                            <span className="truncate">{thread.title}</span>
-                                        </button>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-                <SidebarGroup>
-                    <SidebarGroupLabel>Last 30 Days</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {olderThreads.map((thread) => (
-                                <SidebarMenuItem key={thread.id}>
-                                    <SidebarMenuButton
-                                        asChild
-                                        isActive={selectedChat === thread.id}
-                                    >
-                                        <button onClick={() => handleSelectChat(thread.id)}>
-                                            <span className="truncate">{thread.title}</span>
-                                        </button>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                <div ref={sidebarContentRef} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 120px)' }}>
+                    <SidebarGroup>
+                        <SidebarGroupLabel>
+                            <div className="flex items-center text-xs text-gray-400">
+                                <PinIcon className="h-3 w-3 mr-1" /> Pinned
+                            </div>
+                        </SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {pinnedThreads?.map((thread) => (
+                                    <SidebarMenuItem key={thread._id.toString()}>
+                                        <SidebarMenuButton
+                                            asChild
+                                            isActive={selectedChat === thread._id.toString()}
+                                        >
+                                            <button onClick={() => handleSelectChat(thread._id.toString())}>
+                                                <span className="truncate">{thread.title}</span>
+                                            </button>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Last 7 Days</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {recentThreads?.map((thread) => (
+                                    <SidebarMenuItem key={thread.id}>
+                                        <SidebarMenuButton
+                                            asChild
+                                            isActive={selectedChat === thread.id}
+                                        >
+                                            <button onClick={() => handleSelectChat(thread.id)}>
+                                                <span className="truncate">{thread.title}</span>
+                                            </button>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Last 30 Days</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {olderThreads.map((thread) => (
+                                    <SidebarMenuItem key={thread.id}>
+                                        <SidebarMenuButton
+                                            asChild
+                                            isActive={selectedChat === thread.id}
+                                        >
+                                            <button onClick={() => handleSelectChat(thread.id)}>
+                                                <span className="truncate">{thread.title}</span>
+                                            </button>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                </div>
             </SidebarContent>
             <SidebarFooter>
                 {user && (
