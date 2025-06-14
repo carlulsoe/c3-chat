@@ -22,7 +22,6 @@ import Link from "next/link"
 import { useParams, usePathname, useRouter } from "next/navigation"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
-import { thread } from '../convex/schema';
 
 
 interface ChatItem {
@@ -73,7 +72,6 @@ export function AppSidebar() {
                 <div className="flex items-center justify-between pr-2 py-1">
                     <SidebarTrigger />
                     <h1 className="text-lg font-semibold text-foreground">C3 Chat</h1>
-                    {/* You can add a trigger or logo here if needed */}
                 </div>
                 <Button asChild className="w-full bg-primary hover:bg-primary/90 text-white mt-2">
                     <Link href="/">New Chat</Link>
@@ -148,14 +146,12 @@ export function AppSidebar() {
             </SidebarContent>
             <SidebarFooter>
                 {user && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
-                            <Link href="/settings">
-                                <PinIcon className="h-4 w-4 mr-2" /> {/* Using PinIcon as placeholder */}
-                                Settings
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                        <Link href="/settings">
+                            <SettingsIcon className="h-4 w-4 mr-2" />
+                            Settings
+                        </Link>
+                    </SidebarMenuButton>
                 )}
                 <div className="flex items-center mt-2"> {/* Added mt-2 for spacing */}
                     <UserButton />
