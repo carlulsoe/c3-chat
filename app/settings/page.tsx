@@ -13,8 +13,8 @@ export default function SettingsPage() {
   const updateApiKey = useMutation(api.settings.updateApiKey);
   const router = useRouter();
   useEffect(() => {
-    if (storedApiKey) {
-      setApiKey(storedApiKey);
+    if (storedApiKey !== undefined && apiKey === "") {
+      setApiKey(storedApiKey ?? "");
     }
   }, [storedApiKey]);
 
@@ -33,7 +33,7 @@ export default function SettingsPage() {
       <div className="w-full max-w-lg">
         <h1 className="text-2xl font-semibold mb-2">Settings</h1>
         <p className="text-sm text-muted-foreground mb-4">
-          Configure your application settings below. Your Open Router API key is stored securely.
+          Configure your application settings below. Your Open Router API key is stored in plain text. I hope convex is secure enough.
         </p>
         <div className="flex flex-col gap-3">
           <div>

@@ -1,5 +1,6 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { query } from "./_generated/server";
 
 /**
  * Mutation to update (or insert) the Open Router API key for a user.
@@ -13,6 +14,9 @@ export const updateApiKey = mutation({
     const user = await ctx.auth.getUserIdentity();
     if (!user) {
       throw new Error("Unauthorized");
+    }
+    if (!args.apiKey.trim()) {
+      throw new Error("API key must not be empty");
     }
 
     // Try to find an existing settings row for this user
@@ -36,8 +40,6 @@ export const updateApiKey = mutation({
   },
 });
 
-import { query } from "./_generated/server";
-
 /**
  * Query to get the Open Router API key for the current user.
  * Returns the apiKey if it exists, otherwise null.
@@ -55,6 +57,7 @@ export const getApiKey = query({
       .withIndex("by_user", (q) => q.eq("userId", user.subject))
       .first();
 
-    return settings ? settings.apiKey : null;
+    if (!settings) return null;
+    return settings.apiKey;
   },
 });
