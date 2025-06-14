@@ -15,7 +15,7 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
-import { PinIcon, Search, SettingsIcon } from "lucide-react" // Assuming SettingsIcon is available, else stick to PinIcon
+import { PinIcon, Search, SettingsIcon } from "lucide-react"
 import React, { useRef, useEffect } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
 import { useNavigate, useParams } from "react-router"
