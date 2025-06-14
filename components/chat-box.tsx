@@ -20,7 +20,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
         e.preventDefault()
         const cleanedInput = inputValue.trim()
         if (cleanedInput) {
-            onSendMessage(cleanedInput, selectedModel.name)
+            onSendMessage(cleanedInput, selectedModel.model)
             setInputValue("")
         }
     }

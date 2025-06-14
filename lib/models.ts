@@ -1,8 +1,10 @@
 export const models = [
   {
-    name: "gemini-2.0-flash",
+    model: "gemini-2.0-flash",
+    name: "Gemini 2.0 Flash",
   },
   {
-    name: "gemini-2.5-flash-preview-04-17",
+    model: "gemini-2.5-flash-preview-04-17",
+    name: "Gemini 2.5 Flash",
   },
 ];
