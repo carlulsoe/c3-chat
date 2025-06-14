@@ -7,3 +7,5 @@ http.route({
   method: "POST",
   handler: streamChat,
 });
+
+export default http;

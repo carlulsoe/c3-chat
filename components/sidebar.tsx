@@ -18,6 +18,11 @@ import { Button } from "@/components/ui/button"
 import { PinIcon, Search } from "lucide-react"
 import React, { useState } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import { thread } from '../convex/schema';
 
 
 interface ChatItem {
@@ -31,36 +36,31 @@ export function AppSidebar() {
     const { user } = useUser()
 
     const [selectedChat, setSelectedChat] = useState<string | null>(null)
-    // Mock data for chat threads
-    const pinnedChats: ChatItem[] = [
-        { id: "1", title: "Starfinder Mechanic Class Q...", isPinned: true, lastUpdated: new Date() },
-        { id: "2", title: "Dreading work tomorrow", isPinned: true, lastUpdated: new Date() },
-    ]
+    // Fetch threads if user is loaded
+    const threads = useQuery(api.chat.getUserThreads, user ? undefined : "skip")
+    console.log(threads)
 
-    const recentChats: ChatItem[] = [
-        { id: "3", title: "Invincible Great Purge to Ca...", lastUpdated: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) },
-        { id: "4", title: "Trouble setting up VM enviro...", lastUpdated: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000) },
-        { id: "5", title: "Myostatin Inhibitor Explanati...", lastUpdated: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) },
-        { id: "6", title: "Myostatin Inhibitor Explanati...", lastUpdated: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000) },
-        { id: "7", title: "AI Goal to Plan Tool with Nex...", lastUpdated: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-    ]
+    const pinnedThreads: ChatItem[] = (threads ?? []).filter((chat) => chat.pinned).map((chat) => ({
+        id: chat._id.toString(),
+        title: chat.title,
+        isPinned: chat.pinned,
+        lastUpdated: new Date(chat.updatedAt),
+    }))
 
-    const olderChats: ChatItem[] = [
-        { id: "8", title: "SaaS Business Brainstorming...", lastUpdated: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000) },
-        { id: "9", title: "Excel formula for compound i...", lastUpdated: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000) },
-        {
-            id: "10",
-            title: "Nextjs default layout with cu...",
-            lastUpdated: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000),
-        },
-        { id: "11", title: "Convex schema to Zod sche...", lastUpdated: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000) },
-        { id: "12", title: "AI Business Recommendations", lastUpdated: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000) },
-        {
-            id: "13",
-            title: "AI Consultation for Workflow ...",
-            lastUpdated: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        },
-    ]
+    const recentThreads: ChatItem[] = (threads ?? []).filter((chat) => !chat.pinned).filter((chat) => new Date(chat.updatedAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).map((chat) => ({
+        id: chat._id.toString(),
+        title: chat.title,
+        isPinned: chat.pinned,
+        lastUpdated: new Date(chat.updatedAt),
+    }))
+
+    const olderThreads: ChatItem[] = (threads ?? []).filter((chat) => !chat.pinned).filter((chat) => new Date(chat.updatedAt) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).map((chat) => ({
+        id: chat._id.toString(),
+        title: chat.title,
+        isPinned: chat.pinned,
+        lastUpdated: new Date(chat.updatedAt),
+    }))
+
 
     return (
         <Sidebar>
@@ -85,14 +85,14 @@ export function AppSidebar() {
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {pinnedChats.map((chat) => (
-                                <SidebarMenuItem key={chat.id}>
+                            {pinnedThreads.map((thread) => (
+                                <SidebarMenuItem key={thread.id}>
                                     <SidebarMenuButton
                                         asChild
-                                        isActive={selectedChat === chat.id}
+                                        isActive={selectedChat === thread.id}
                                     >
-                                        <button onClick={() => setSelectedChat(chat.id)}>
-                                            <span className="truncate">{chat.title}</span>
+                                        <button onClick={() => setSelectedChat(thread.id)}>
+                                            <span className="truncate">{thread.title}</span>
                                         </button>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
@@ -104,14 +104,14 @@ export function AppSidebar() {
                     <SidebarGroupLabel>Last 7 Days</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {recentChats.map((chat) => (
-                                <SidebarMenuItem key={chat.id}>
+                            {recentThreads?.map((thread) => (
+                                <SidebarMenuItem key={thread.id}>
                                     <SidebarMenuButton
                                         asChild
-                                        isActive={selectedChat === chat.id}
+                                        isActive={selectedChat === thread.id}
                                     >
-                                        <button onClick={() => setSelectedChat(chat.id)}>
-                                            <span className="truncate">{chat.title}</span>
+                                        <button onClick={() => setSelectedChat(thread.id)}>
+                                            <span className="truncate">{thread.title}</span>
                                         </button>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
@@ -123,14 +123,14 @@ export function AppSidebar() {
                     <SidebarGroupLabel>Last 30 Days</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {olderChats.map((chat) => (
-                                <SidebarMenuItem key={chat.id}>
+                            {olderThreads.map((thread) => (
+                                <SidebarMenuItem key={thread.id}>
                                     <SidebarMenuButton
                                         asChild
-                                        isActive={selectedChat === chat.id}
+                                        isActive={selectedChat === thread.id}
                                     >
-                                        <button onClick={() => setSelectedChat(chat.id)}>
-                                            <span className="truncate">{chat.title}</span>
+                                        <button onClick={() => setSelectedChat(thread.id)}>
+                                            <span className="truncate">{thread.title}</span>
                                         </button>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>

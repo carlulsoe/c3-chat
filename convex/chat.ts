@@ -27,6 +27,8 @@ export const createThread = mutation({
       updatedAt: now,
       userId: user.subject,
       streamId: streamId,
+      title: "New Thread",
+      pinned: false,
     });
     return threadId;
   },
@@ -103,6 +105,23 @@ export const getChatBody = query({
       ctx,
       args.streamId as StreamId,
     );
+  },
+});
+
+export const getUserThreads = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("User not authenticated");
+    }
+
+    const threads = await ctx.db
+      .query("thread")
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .order("desc")
+      .take(20);
+
+    return threads;
   },
 });
 
