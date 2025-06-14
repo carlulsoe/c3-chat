@@ -1,24 +1,33 @@
-"use client"
-import ChatInterface from "@/components/chat-interface";
+import { preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import { Doc, Id } from "@/convex/_generated/dataModel";
-import { useQuery } from "convex/react";
-import { useParams } from "next/navigation";
+import { Id } from "@/convex/_generated/dataModel";
+import ChatInterfaceWrapper from "./ChatInterfaceWrapper";
+import { auth } from "@clerk/nextjs/server";
 
-export default function ChatIdPage() {
-    const params = useParams();
-    let id: Id<"thread">;
+
+export default async function ChatIdPage({
+    params,
+}: {
+    params: { id: string };
+}) {
+    const { id } = await params
+    let threadId: Id<"thread">;
     try {
-        id = params?.id as Id<"thread">;
+        threadId = id as Id<"thread">;
     } catch (error) {
         return <div>Invalid thread id</div>;
     }
-    const messages = useQuery(api.chat.getMessages, { threadId: id });
-    if (!messages) {
-        return <div>Loading...</div>;
+    const { getToken } = await auth()
+    const token = await getToken({ template: "convex" });
+    if (!token) {
+        return <div>Token not found</div>;
     }
 
-    return (
-        <ChatInterface messages={messages.filter((message) => message !== null) as Doc<"threadMessage">[]} />
+    const preloadedMessages = await preloadQuery(api.chat.getMessages, {
+        threadId,
+    },
+        { token: token }
     );
+
+    return <ChatInterfaceWrapper preloadedMessages={preloadedMessages} />;
 }
