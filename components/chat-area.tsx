@@ -35,21 +35,21 @@ export function ChatArea({ messages }: ChatAreaProps) {
         "What is the meaning of life?",
     ]
 
-    const handleSendMessage = async (message: string) => {
+    const handleSendMessage = async (prompt: string) => {
         // if inputValue is empty, return
-        if (inputValue.length === 0) {
+        if (prompt.length === 0) {
             return
         }
         // if there are no messages, create a new thread
         if (messages.length === 0) {
-            const threadId = await createThread()
-            await addMessage({ threadId, message, role: "user" })
+            const threadId = await createThread({ message: prompt })
+            await addMessage({ threadId, message: prompt, role: "user" })
             router.push(`/chat/${threadId}`)
         }
         // if there are messages, add message to thread
         if (messages.length > 0) {
             const threadId = messages[0].threadId as Id<"thread">
-            await addMessage({ threadId, message, role: "user" })
+            await addMessage({ threadId, message: prompt, role: "user" })
         }
     }
 

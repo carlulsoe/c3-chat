@@ -3,9 +3,18 @@ import {
   StreamId,
   StreamIdValidator,
 } from "@convex-dev/persistent-text-streaming";
-import { components } from "./_generated/api";
+import { components, internal } from "./_generated/api";
 import { v } from "convex/values";
-import { httpAction, mutation, query } from "./_generated/server";
+import {
+  httpAction,
+  internalAction,
+  internalMutation,
+  mutation,
+  query,
+} from "./_generated/server";
+import { google } from "@ai-sdk/google";
+import { generateObject, generateText } from "ai";
+import z from "zod";
 
 const persistentTextStreaming = new PersistentTextStreaming(
   components.persistentTextStreaming,
@@ -13,7 +22,10 @@ const persistentTextStreaming = new PersistentTextStreaming(
 
 // Create a new chat thread
 export const createThread = mutation({
-  handler: async (ctx) => {
+  args: {
+    message: v.string(),
+  },
+  handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
     if (!user) {
       throw new Error("User not authenticated");
@@ -27,10 +39,54 @@ export const createThread = mutation({
       updatedAt: now,
       userId: user.subject,
       streamId: streamId,
-      title: "New Thread",
+      title: "",
       pinned: false,
     });
+    await ctx.scheduler.runAfter(0, internal.chat.generateThreadTitle, {
+      threadId,
+      message: args.message,
+    });
     return threadId;
+  },
+});
+
+// update thread title
+export const generateThreadTitle = internalAction({
+  args: {
+    threadId: v.id("thread"),
+    message: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { object } = await generateObject({
+      model: google("gemini-2.0-flash"),
+      system: "Generate a title for a new chat",
+      messages: [
+        {
+          role: "user",
+          content: args.message,
+        },
+      ],
+      schema: z.object({
+        title: z.string(),
+      }),
+    });
+    await ctx.runMutation(internal.chat.updateThreadTitle, {
+      threadId: args.threadId,
+      title: object.title,
+    });
+  },
+});
+
+// update thread title
+export const updateThreadTitle = internalMutation({
+  args: {
+    threadId: v.id("thread"),
+    title: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.threadId, {
+      title: args.title,
+    });
   },
 });
 
