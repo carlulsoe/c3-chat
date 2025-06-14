@@ -1,3 +1,9 @@
+This directory contains all the Convex backend logic for the chat application, including database schema definitions, query functions, and mutation functions.
+
+For more information about the project structure, setup, and how to run the application, please see the main [README.md](../README.md).
+
+---
+
 # Welcome to your Convex functions directory!
 
 Write your Convex functions here.

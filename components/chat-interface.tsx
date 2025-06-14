@@ -5,7 +5,10 @@ import { AppSidebar } from "@/components/sidebar"
 import { SidebarTrigger, useSidebar } from "./ui/sidebar"
 import { Doc } from "@/convex/_generated/dataModel"
 
-
+/**
+ * ChatInterface is the main component for the chat application.
+ * It integrates the sidebar for navigation and the chat area for displaying messages and user input.
+ */
 export default function ChatInterface({ messages }: { messages: Doc<"threadMessage">[] }) {
     const { open } = useSidebar()
     return (
