@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
   const [apiKey, setApiKey] = useState("");
   const storedApiKey = useQuery(api.settings.getApiKey);
   const updateApiKey = useMutation(api.settings.updateApiKey);
-
+  const router = useRouter();
   useEffect(() => {
     if (storedApiKey) {
       setApiKey(storedApiKey);
@@ -24,6 +25,11 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col items-center p-4">
+      <div className="flex items-start">
+        <Button variant="ghost" onClick={() => router.push("/")} className="mb-2">
+          <span className="mr-2">←</span> Back
+        </Button>
+      </div>
       <div className="w-full max-w-lg">
         <h1 className="text-2xl font-semibold mb-2">Settings</h1>
         <p className="text-sm text-muted-foreground mb-4">
@@ -37,7 +43,7 @@ export default function SettingsPage() {
             <Input
               id="apiKey"
               type="password"
-              value={storedApiKey || apiKey}
+              value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="Enter your Open Router API Key"
               className="w-full"
