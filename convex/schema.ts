@@ -35,7 +35,13 @@ export const threadMessage = defineTable({
   ),
 }).index("by_streamId", ["streamId"]);
 
+export const settings = defineTable({
+  userId: v.string(),
+  apiKey: v.string(),
+}).index("by_user", ["userId"]);
+
 export default defineSchema({
   thread,
   threadMessage,
+  settings,
 });

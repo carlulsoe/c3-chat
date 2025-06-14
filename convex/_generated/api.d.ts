@@ -10,6 +10,7 @@
 
 import type * as chat from "../chat.js";
 import type * as http from "../http.js";
+import type * as settings from "../settings.js";
 
 import type {
   ApiFromModules,
@@ -28,6 +29,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   chat: typeof chat;
   http: typeof http;
+  settings: typeof settings;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 
