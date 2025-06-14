@@ -316,3 +316,29 @@ export const getThreadIdFromStreamId = internalQuery({
     return message.threadId;
   },
 });
+
+// Mutation to pin or unpin a thread
+export const setThreadPinned = mutation({
+  args: {
+    threadId: v.id("thread"),
+    pinned: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+    const thread = await ctx.db.get(args.threadId);
+    if (!thread) {
+      throw new Error("Thread not found");
+    }
+    if (thread.userId !== user.subject) {
+      throw new Error("User not authorized to pin/unpin this thread");
+    }
+    await ctx.db.patch(args.threadId, {
+      pinned: args.pinned,
+      updatedAt: Date.now(),
+    });
+    return { success: true };
+  },
+});

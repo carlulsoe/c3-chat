@@ -19,9 +19,10 @@ import { PinIcon, Search, SettingsIcon } from "lucide-react" // Assuming Setting
 import React, { useRef, useEffect } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
 import { useNavigate, useParams } from "react-router"
-import { usePaginatedQuery, useQuery } from "convex/react"
+import { usePaginatedQuery, useQuery, useMutation } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { NavLink } from "react-router"
+import { Id } from "@/convex/_generated/dataModel"
 
 
 interface ChatItem {
@@ -41,6 +42,7 @@ export function AppSidebar() {
         initialNumItems: 20,
     })
     const pinnedThreads = useQuery(api.chat.getPinnedUserThreads)
+    const setThreadPinned = useMutation(api.chat.setThreadPinned)
 
     const handleSelectChat = (threadId: string) => {
         navigate(`/chat/${threadId}`)
@@ -85,6 +87,21 @@ export function AppSidebar() {
         }
     }, [status, loadMore])
 
+    // Helper to render pin button
+    const PinButton = ({ threadId, isPinned }: { threadId: string, isPinned?: boolean }) => (
+        <button
+            type="button"
+            className="ml-2 p-1 hover:bg-accent rounded"
+            title={isPinned ? "Unpin" : "Pin"}
+            onClick={async (e) => {
+                e.stopPropagation();
+                await setThreadPinned({ threadId: threadId as Id<'thread'>, pinned: !isPinned })
+            }}
+        >
+            <PinIcon className={`h-4 w-4 ${isPinned ? "fill-primary text-primary" : "text-gray-400"}`} />
+        </button>
+    )
+
     return (
         <Sidebar>
             <SidebarHeader>
@@ -116,8 +133,9 @@ export function AppSidebar() {
                                             asChild
                                             isActive={selectedChat === thread._id.toString()}
                                         >
-                                            <button onClick={() => handleSelectChat(thread._id.toString())}>
-                                                <span className="truncate">{thread.title}</span>
+                                            <button onClick={() => handleSelectChat(thread._id.toString())} className="flex items-center w-full">
+                                                <span className="truncate flex-1">{thread.title}</span>
+                                                <PinButton threadId={thread._id.toString()} isPinned={thread.pinned} />
                                             </button>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
@@ -135,8 +153,9 @@ export function AppSidebar() {
                                             asChild
                                             isActive={selectedChat === thread.id}
                                         >
-                                            <button onClick={() => handleSelectChat(thread.id)}>
-                                                <span className="truncate">{thread.title}</span>
+                                            <button onClick={() => handleSelectChat(thread.id)} className="flex items-center w-full">
+                                                <span className="truncate flex-1">{thread.title}</span>
+                                                <PinButton threadId={thread.id} isPinned={thread.isPinned} />
                                             </button>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
@@ -154,8 +173,9 @@ export function AppSidebar() {
                                             asChild
                                             isActive={selectedChat === thread.id}
                                         >
-                                            <button onClick={() => handleSelectChat(thread.id)}>
-                                                <span className="truncate">{thread.title}</span>
+                                            <button onClick={() => handleSelectChat(thread.id)} className="flex items-center w-full">
+                                                <span className="truncate flex-1">{thread.title}</span>
+                                                <PinButton threadId={thread.id} isPinned={thread.isPinned} />
                                             </button>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
