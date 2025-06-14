@@ -5,6 +5,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ChevronDown, ChevronUp, Paperclip, Search } from "lucide-react"
+import { models } from "@/lib/models"
 
 interface ChatBoxProps {
     inputValue: string
@@ -14,7 +15,7 @@ interface ChatBoxProps {
 }
 
 const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMessage, placeholder = "Type your message here..." }) => {
-
+    const [selectedModel, setSelectedModel] = useState(models[0])
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault()
         const cleanedInput = inputValue.trim()
@@ -41,14 +42,16 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="text-primary hover:text-primary/80 hover:bg-primary/10 p-2 h-auto">
-                                        <span className="text-sm">Gemini 2.5 Flash</span>
+                                        <span className="text-sm">{selectedModel?.name}</span>
                                         <ChevronDown className="h-4 w-4 ml-1" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent side="top" align="start" className="bg-background border-border">
-                                    <DropdownMenuItem className="text-primary hover:bg-primary/10">Gemini 2.5 Flash</DropdownMenuItem>
-                                    <DropdownMenuItem className="text-primary hover:bg-primary/10">GPT-4 Turbo</DropdownMenuItem>
-                                    <DropdownMenuItem className="text-primary hover:bg-primary/10">Claude 3 Opus</DropdownMenuItem>
+                                    {models?.map((model) => (
+                                        <DropdownMenuItem key={model.name} className="text-primary hover:bg-primary/10" onClick={() => setSelectedModel(model)}>
+                                            {model.name}
+                                        </DropdownMenuItem>
+                                    ))}
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
