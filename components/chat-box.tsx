@@ -7,13 +7,24 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ChevronDown, ChevronUp, Paperclip, Search } from "lucide-react"
 import { models } from "@/lib/models"
 
+/**
+ * Props for the ChatBox component.
+ */
 interface ChatBoxProps {
+    /** The current value of the input field. */
     inputValue: string
+    /** Function to update the input field's value. */
     setInputValue: (value: string) => void
+    /** Function to call when a message is sent. It takes the message string and the selected model string as arguments. */
     onSendMessage: (message: string, model: string) => void
+    /** Optional placeholder text for the input field. Defaults to "Type your message here...". */
     placeholder?: string
 }
 
+/**
+ * ChatBox is the component that provides the text input area for users to type and send messages.
+ * It also includes options for selecting a model and attaching files (though file attachment is a placeholder).
+ */
 const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMessage, placeholder = "Type your message here..." }) => {
     const [selectedModel, setSelectedModel] = useState(models[0])
     const handleSendMessage = (e: React.FormEvent) => {

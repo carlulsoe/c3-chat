@@ -14,10 +14,21 @@ import { Doc } from "@/convex/_generated/dataModel"
 import { MessagePair } from "./messages/message-pair"
 import { ExampleQuestions } from "./example-questions"
 
+/**
+ * Props for the ChatArea component.
+ */
 interface ChatAreaProps {
+    /**
+     * An array of messages to be displayed in the chat area.
+     * Each message is a Convex document of type "threadMessage".
+     */
     messages: Doc<"threadMessage">[]
 }
 
+/**
+ * ChatArea is responsible for displaying the list of chat messages
+ * and includes the ChatBox component for user input.
+ */
 export function ChatArea({ messages }: ChatAreaProps) {
     const [inputValue, setInputValue] = useState("")
     const user = useUser()
