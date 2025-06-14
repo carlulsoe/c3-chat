@@ -18,7 +18,9 @@ export const thread = defineTable({
   updatedAt: v.number(),
   title: v.string(),
   pinned: v.boolean(),
-}).index("by_user", ["userId", "updatedAt"]);
+})
+  .index("by_user", ["userId", "updatedAt"])
+  .index("by_pinned", ["pinned"]);
 
 export const threadMessage = defineTable({
   threadId: v.id("thread"),

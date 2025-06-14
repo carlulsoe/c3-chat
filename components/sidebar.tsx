@@ -20,7 +20,7 @@ import React, { useState } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
 import Link from "next/link"
 import { useParams, usePathname, useRouter } from "next/navigation"
-import { useQuery } from "convex/react"
+import { usePaginatedQuery, useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 
 
@@ -38,27 +38,23 @@ export function AppSidebar() {
 
     const selectedChat = params.id as string
     // Fetch threads if user is loaded
-    const threads = useQuery(api.chat.getUserThreads, user ? undefined : "skip")
+    const { results, status, loadMore } = usePaginatedQuery(api.chat.getUserThreads, user ? { paginationOpts: { numItems: 20 } } : "skip", {
+        initialNumItems: 20,
+    })
+    const pinnedThreads = useQuery(api.chat.getPinnedUserThreads)
 
     const handleSelectChat = (threadId: string) => {
         router.push(`/chat/${threadId}`)
     }
 
-    const pinnedThreads: ChatItem[] = (threads ?? []).filter((chat) => chat.pinned).map((chat) => ({
+    const recentThreads: ChatItem[] = (results ?? []).filter((chat) => new Date(chat.updatedAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).map((chat) => ({
         id: chat._id.toString(),
         title: chat.title,
         isPinned: chat.pinned,
         lastUpdated: new Date(chat.updatedAt),
     }))
 
-    const recentThreads: ChatItem[] = (threads ?? []).filter((chat) => !chat.pinned).filter((chat) => new Date(chat.updatedAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).map((chat) => ({
-        id: chat._id.toString(),
-        title: chat.title,
-        isPinned: chat.pinned,
-        lastUpdated: new Date(chat.updatedAt),
-    }))
-
-    const olderThreads: ChatItem[] = (threads ?? []).filter((chat) => !chat.pinned).filter((chat) => new Date(chat.updatedAt) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).map((chat) => ({
+    const olderThreads: ChatItem[] = (results ?? []).filter((chat) => new Date(chat.updatedAt) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).map((chat) => ({
         id: chat._id.toString(),
         title: chat.title,
         isPinned: chat.pinned,
@@ -90,13 +86,13 @@ export function AppSidebar() {
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {pinnedThreads.map((thread) => (
-                                <SidebarMenuItem key={thread.id}>
+                            {pinnedThreads?.map((thread) => (
+                                <SidebarMenuItem key={thread._id.toString()}>
                                     <SidebarMenuButton
                                         asChild
-                                        isActive={selectedChat === thread.id}
+                                        isActive={selectedChat === thread._id.toString()}
                                     >
-                                        <button onClick={() => handleSelectChat(thread.id)}>
+                                        <button onClick={() => handleSelectChat(thread._id.toString())}>
                                             <span className="truncate">{thread.title}</span>
                                         </button>
                                     </SidebarMenuButton>

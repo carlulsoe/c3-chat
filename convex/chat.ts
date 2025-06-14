@@ -17,6 +17,7 @@ import { google } from "@ai-sdk/google";
 import { generateObject, streamText } from "ai";
 import z from "zod";
 import { Doc } from "./_generated/dataModel";
+import { paginationOptsValidator } from "convex/server";
 
 const persistentTextStreaming = new PersistentTextStreaming(
   components.persistentTextStreaming,
@@ -169,7 +170,9 @@ export const getChatBody = query({
 });
 
 export const getUserThreads = query({
-  handler: async (ctx) => {
+  args: { paginationOpts: paginationOptsValidator },
+
+  handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("User not authenticated");
@@ -178,9 +181,26 @@ export const getUserThreads = query({
     const threads = await ctx.db
       .query("thread")
       .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .filter((q) => q.eq(q.field("pinned"), false))
       .order("desc")
-      .take(20);
+      .paginate(args.paginationOpts);
 
+    return threads;
+  },
+});
+
+export const getPinnedUserThreads = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("User not authenticated");
+    }
+    const threads = await ctx.db
+      .query("thread")
+      .filter((q) => q.eq(q.field("userId"), identity.subject))
+      .filter((q) => q.eq(q.field("pinned"), true))
+      .order("desc")
+      .collect();
     return threads;
   },
 });
