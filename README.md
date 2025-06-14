@@ -1,8 +1,8 @@
-# Chat Application (Placeholder Title)
+# C3 Chat
 
 ## Description
 
-This is a real-time chat application that allows users to communicate with each other instantly. It provides a seamless and interactive messaging experience.
+This is a real-time chat application that allows users to chat with AI. It provides a seamless and interactive messaging experience.
 
 ## Features
 
@@ -15,8 +15,10 @@ This is a real-time chat application that allows users to communicate with each 
 - **Frontend:**
   - Next.js
   - React
+  - React Router
   - TypeScript
   - Tailwind CSS
+  - Shadcn
 - **Backend:**
   - Convex
 
@@ -29,6 +31,7 @@ The project follows a standard Next.js application structure:
 ├── app/                  # Main Next.js application pages and layouts
 ├── components/           # Reusable UI components
 ├── convex/               # Convex backend functions (database schema, queries, mutations)
+├── frontend/             # The react router frontend.
 ├── lib/                  # Utility functions and shared logic
 ├── public/               # Static assets (images, fonts, etc.)
 ├── .env.local            # Environment variables (for Convex, API keys, etc.)
@@ -41,8 +44,8 @@ The project follows a standard Next.js application structure:
 - **`app/`**: Contains the core application routes, pages, and layouts. Next.js 13+ App Router is used.
 - **`components/`**: Houses reusable React components used throughout the application.
 - **`convex/`**: Includes all backend logic managed by Convex. This typically contains:
-    - `schema.ts`: Defines the database schema.
-    - `*.ts` (e.g., `messages.ts`, `users.ts`): Contains Convex query and mutation functions.
+  - `schema.ts`: Defines the database schema.
+  - `*.ts` (e.g., `messages.ts`, `users.ts`): Contains Convex query and mutation functions.
 - **`lib/`**: Holds shared utility functions, helper scripts, or any other code that doesn't fit into the other categories.
 - **`public/`**: Stores static assets that are served directly by the web server (e.g., images, favicons).
 
@@ -55,72 +58,56 @@ Follow these instructions to get a local copy of the project up and running.
 Make sure you have the following software installed on your machine:
 
 - [Node.js](https://nodejs.org/) (LTS version recommended)
-- [npm](https://www.npmjs.com/) (comes with Node.js) or [yarn](https://yarnpkg.com/)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
 
 ### Installation
 
-1.  **Clone the repository (if applicable):**
+1. **Clone the repository (if applicable):**
+
     ```bash
     git clone <your-repository-url>
     cd <project-directory>
     ```
 
-2.  **Install dependencies:**
+2. **Install dependencies:**
     Using npm:
+
     ```bash
     npm install
-    ```
-    Or using yarn:
-    ```bash
-    yarn install
     ```
 
 ### Environment Setup
 
 This project uses Convex for its backend.
 
-1.  **Set up Convex:**
-    If you haven't already, install the Convex CLI:
-    ```bash
-    npm install -g convex
-    ```
-    Log in to your Convex account or create a new one:
-    ```bash
-    npx convex login
-    ```
+1. **Set up Convex:**
+
     Initialize Convex for your project. This will guide you through creating a new Convex project or linking to an existing one.
+
     ```bash
     npx convex dev
     ```
+
     This command will also create necessary Convex configuration files and potentially a `.env.local` file or update your existing one with your Convex deployment URL (e.g., `CONVEX_URL=https://<your-project-name>.convex.cloud`).
 
-2.  **Environment Variables:**
+2. **Environment Variables:**
     Create a `.env.local` file in the root of your project if it wasn't created by `npx convex dev` or if you have other environment variables to add.
     It should contain your Convex deployment URL:
+
     ```env
     NEXT_PUBLIC_CONVEX_URL="https://<your-project-name>.convex.cloud"
     # Add any other environment variables here
     ```
+
     **Important:** The `npx convex dev` command watches your `convex/` directory and pushes changes to your Convex deployment. It also generates TypeScript files for your Convex functions into `convex/_generated/server.ts` and `convex/_generated/client.ts`, which are then used by your frontend. Keep this process running in a separate terminal while developing.
 
 ### Running the Development Server
 
-Once the dependencies are installed and the environment is set up:
-
-1.  **Ensure the Convex development process is running:**
-    ```bash
-    npx convex dev
-    ```
-    Keep this running in a separate terminal.
-
-2.  **Start the Next.js development server:**
+1. **Start the Next.js development server and convex:**
     Using npm:
+
     ```bash
     npm run dev
-    ```
-    Or using yarn:
-    ```bash
-    yarn dev
     ```
 
 This will typically start the application on `http://localhost:3000`. Open this URL in your browser to see the application.
@@ -128,35 +115,7 @@ This will typically start the application on `http://localhost:3000`. Open this 
 ## Usage
 
 Upon launching the application, users can:
+
 - Sign up or log in.
-- View available chat rooms or create new ones.
 - Send and receive messages in real-time.
 - (Describe other user interactions based on features)
-
-## Contributing
-
-Contributions are welcome! If you'd like to contribute to this project, please follow these steps:
-
-1.  **Fork the repository.**
-2.  **Create a new branch** for your feature or bug fix:
-    ```bash
-    git checkout -b feature/your-feature-name
-    ```
-    or
-    ```bash
-    git checkout -b fix/your-bug-fix
-    ```
-3.  **Make your changes** and commit them with clear and descriptive messages.
-4.  **Push your changes** to your forked repository:
-    ```bash
-    git push origin feature/your-feature-name
-    ```
-5.  **Open a Pull Request (PR)** to the main repository's `main` branch. Please provide a detailed description of your changes in the PR.
-
-## License
-
-(Placeholder for License Information - e.g., MIT License)
-
----
-
-*This README is a template. Please update it with specific details about your project.*
