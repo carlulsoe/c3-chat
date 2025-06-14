@@ -16,6 +16,7 @@ import {
 import { google } from "@ai-sdk/google";
 import { generateObject, streamText } from "ai";
 import z from "zod";
+import { Doc } from "./_generated/dataModel";
 
 const persistentTextStreaming = new PersistentTextStreaming(
   components.persistentTextStreaming,
@@ -95,6 +96,7 @@ export const addMessage = mutation({
     threadId: v.id("thread"),
     message: v.string(),
     role: v.union(v.literal("user"), v.literal("assistant")),
+    model: v.string(),
   },
   handler: async (ctx, args) => {
     // Insert message
@@ -116,6 +118,7 @@ export const addMessage = mutation({
       message: args.message,
       role: args.role,
       streamId: streamId,
+      model: args.model,
     });
     // Update thread's messages array
     if (thread) {
@@ -227,16 +230,19 @@ export const streamChat = httpAction(async (ctx, request) => {
     if (!threadId) {
       throw new Error("Thread not found");
     }
-    const rawMessages = await ctx.runQuery(api.chat.getMessages, { threadId });
-    const messages = rawMessages.map(
-      (m: { role: string; message: string }) => ({
-        role: m.role,
-        content: m.message,
-      }),
+    const rawMessages: Doc<"threadMessage">[] = await ctx.runQuery(
+      api.chat.getMessages,
+      { threadId },
     );
-
+    const messages = rawMessages.map((m) => ({
+      role: m.role,
+      content: m.message,
+    }));
+    // get the model from the last message
+    const model = rawMessages[rawMessages.length - 1].model;
+    console.log(model);
     const { textStream } = streamText({
-      model: google("gemini-2.0-flash"),
+      model: google(model ?? "gemini-2.0-flash"),
       messages,
     });
 

@@ -24,6 +24,7 @@ export const threadMessage = defineTable({
   threadId: v.id("thread"),
   message: v.string(),
   role: v.union(v.literal("user"), v.literal("assistant")),
+  model: v.optional(v.string()),
   streamId: StreamIdValidator,
   status: v.optional(
     v.union(

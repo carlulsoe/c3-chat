@@ -10,7 +10,7 @@ import { models } from "@/lib/models"
 interface ChatBoxProps {
     inputValue: string
     setInputValue: (value: string) => void
-    onSendMessage: (message: string) => void
+    onSendMessage: (message: string, model: string) => void
     placeholder?: string
 }
 
@@ -20,7 +20,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
         e.preventDefault()
         const cleanedInput = inputValue.trim()
         if (cleanedInput) {
-            onSendMessage(cleanedInput)
+            onSendMessage(cleanedInput, selectedModel.name)
             setInputValue("")
         }
     }

@@ -29,7 +29,7 @@ export function ChatArea({ messages }: ChatAreaProps) {
     const createThread = useMutation(api.chat.createThread)
     const router = useRouter()
 
-    const handleSendMessage = async (prompt: string) => {
+    const handleSendMessage = async (prompt: string, model: string) => {
         // if inputValue is empty, return
         if (prompt.length === 0) {
             return
@@ -38,13 +38,13 @@ export function ChatArea({ messages }: ChatAreaProps) {
         // if there are no messages, create a new thread
         if (messages.length === 0) {
             threadId = await createThread({ message: prompt })
-            await addMessage({ threadId, message: prompt, role: "user" })
+            await addMessage({ threadId, message: prompt, role: "user", model: model })
             router.push(`/chat/${threadId}`)
         }
         // if there are messages, add message to thread
         if (messages.length > 0) {
             threadId = messages[0].threadId as Id<"thread">
-            await addMessage({ threadId, message: prompt, role: "user" })
+            await addMessage({ threadId, message: prompt, role: "user", model: model })
         }
     }
 
