@@ -1,0 +1,59 @@
+"use client";
+
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useRouter } from "next/navigation";
+
+export default function SettingsPage() {
+  const [apiKey, setApiKey] = useState("");
+  const storedApiKey = useQuery(api.settings.getApiKey);
+  const updateApiKey = useMutation(api.settings.updateApiKey);
+  const router = useRouter();
+  useEffect(() => {
+    if (storedApiKey !== undefined && apiKey === "") {
+      setApiKey(storedApiKey ?? "");
+    }
+  }, [storedApiKey]);
+
+  const handleSave = async () => {
+    await updateApiKey({ apiKey });
+    setApiKey("");
+  };
+
+  return (
+    <div className="flex flex-col items-center p-4">
+      <div className="flex items-start">
+        <Button variant="ghost" onClick={() => router.push("/")} className="mb-2">
+          <span className="mr-2">←</span> Back
+        </Button>
+      </div>
+      <div className="w-full max-w-lg">
+        <h1 className="text-2xl font-semibold mb-2">Settings</h1>
+        <p className="text-sm text-muted-foreground mb-4">
+          Configure your application settings below. Your Open Router API key is stored in plain text. I hope convex is secure enough.
+        </p>
+        <div className="flex flex-col gap-3">
+          <div>
+            <label htmlFor="apiKey" className="text-sm font-medium block mb-1">
+              Open Router API Key
+            </label>
+            <Input
+              id="apiKey"
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="Enter your Open Router API Key"
+              className="w-full"
+            />
+          </div>
+          <Button onClick={handleSave} className="mt-2 w-fit self-start">
+            Save API Key
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}

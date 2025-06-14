@@ -15,7 +15,7 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
-import { PinIcon, Search } from "lucide-react"
+import { PinIcon, Search, SettingsIcon } from "lucide-react" // Assuming SettingsIcon is available, else stick to PinIcon
 import React, { useState } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
 import Link from "next/link"
@@ -147,7 +147,17 @@ export function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
-                <div className="flex items-center">
+                {user && (
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                            <Link href="/settings">
+                                <PinIcon className="h-4 w-4 mr-2" /> {/* Using PinIcon as placeholder */}
+                                Settings
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                )}
+                <div className="flex items-center mt-2"> {/* Added mt-2 for spacing */}
                     <UserButton />
                     <div className="ml-2">
                         <div className="text-sm font-medium">{user?.fullName}</div>

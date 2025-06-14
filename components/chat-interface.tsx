@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { ChatArea } from "@/components/chat-area"
 import { AppSidebar } from "@/components/sidebar"
 import { SidebarTrigger } from "./ui/sidebar"
