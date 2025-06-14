@@ -9,14 +9,13 @@ interface MessagePairProps {
     userMessage: Doc<"threadMessage">
     aiMessage: Doc<"threadMessage">
 }
-const AiMessage = dynamic(() => import("./ai-message"), { ssr: false });
+const StreamingAiMessage = dynamic(() => import("./streaming-ai-message"), { ssr: false });
 
 export function MessagePair({ userMessage, aiMessage }: MessagePairProps) {
-
     return (
         <div className="flex flex-col gap-4" key={userMessage._id}>
             {userMessage && <UserMessage message={userMessage} />}
-            {aiMessage && <AiMessage message={aiMessage} />}
+            {aiMessage && <StreamingAiMessage message={aiMessage} />}
         </div>
     )
 }

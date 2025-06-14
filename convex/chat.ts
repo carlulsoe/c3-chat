@@ -17,7 +17,7 @@ import { google } from "@ai-sdk/google";
 import { generateObject, streamText } from "ai";
 import z from "zod";
 import { Doc } from "./_generated/dataModel";
-import { paginationOptsValidator } from "convex/server";
+import { GenericActionCtx, paginationOptsValidator } from "convex/server";
 
 const persistentTextStreaming = new PersistentTextStreaming(
   components.persistentTextStreaming,
@@ -239,7 +239,8 @@ export const streamChat = httpAction(async (ctx, request) => {
   }
   const body = (await request.json()) as { streamId: string };
   const generateChat = async (
-    ctx: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ctx: GenericActionCtx<any>,
     request: Request,
     streamId: string,
     chunkAppender: (chunk: string) => Promise<void>,
@@ -250,16 +251,18 @@ export const streamChat = httpAction(async (ctx, request) => {
     if (!threadId) {
       throw new Error("Thread not found");
     }
-    const rawMessages: Doc<"threadMessage">[] = await ctx.runQuery(
+    const rawMessages: (Doc<"threadMessage"> | null)[] = await ctx.runQuery(
       api.chat.getMessages,
       { threadId },
     );
-    const messages = rawMessages.map((m) => ({
-      role: m.role,
-      content: m.message,
-    }));
+    const messages = rawMessages
+      .filter((m) => m !== null)
+      .map((m) => ({
+        role: m.role,
+        content: m.message,
+      }));
     // get the model from the last message
-    const model = rawMessages[rawMessages.length - 1].model;
+    const model = rawMessages?.[rawMessages.length - 1]?.model;
     console.log(model);
     const { textStream } = streamText({
       system:

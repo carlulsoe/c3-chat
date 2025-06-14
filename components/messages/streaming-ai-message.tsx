@@ -7,11 +7,11 @@ import { StreamId } from "@convex-dev/persistent-text-streaming";
 import Markdown from "react-markdown";
 import { useAuth } from "@clerk/nextjs";
 
-interface AiMessageProps {
+interface StreamingAiMessageProps {
     message: Doc<"threadMessage">
 }
 
-function AiMessage({ message }: AiMessageProps) {
+function StreamingAiMessage({ message }: StreamingAiMessageProps) {
     const { getToken } = useAuth();
     const [authToken, setAuthToken] = useState<string | null>(null);
 
@@ -45,4 +45,4 @@ function AiMessage({ message }: AiMessageProps) {
     )
 }
 
-export default AiMessage;
+export default StreamingAiMessage;

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function SettingsPage() {
@@ -13,7 +13,7 @@ export default function SettingsPage() {
   const [showApiKey, setShowApiKey] = useState(false);
   const storedApiKey = useQuery(api.settings.getApiKey);
   const updateApiKey = useMutation(api.settings.updateApiKey);
-  const router = useRouter();
+  const navigate = useNavigate();
   useEffect(() => {
     if (storedApiKey !== undefined && apiKey === "") {
       setApiKey(storedApiKey ?? "");
@@ -33,7 +33,7 @@ export default function SettingsPage() {
     <div className="relative min-h-screen w-full bg-background">
       {/* Back button in top-left, outside centering flex */}
       <div className="absolute top-4 left-4 z-10">
-        <Button variant="ghost" onClick={() => router.push("/")}
+        <Button variant="ghost" onClick={() => navigate("/")}
           className="mb-2">
           <span className="mr-2">←</span> Back
         </Button>

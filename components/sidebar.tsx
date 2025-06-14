@@ -18,10 +18,10 @@ import { Button } from "@/components/ui/button"
 import { PinIcon, Search, SettingsIcon } from "lucide-react" // Assuming SettingsIcon is available, else stick to PinIcon
 import React, { useRef, useEffect } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
-import Link from "next/link"
-import { useParams, useRouter } from "next/navigation"
+import { useNavigate, useParams } from "react-router"
 import { usePaginatedQuery, useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
+import { NavLink } from "react-router"
 
 
 interface ChatItem {
@@ -33,9 +33,8 @@ interface ChatItem {
 
 export function AppSidebar() {
     const { user } = useUser()
-    const router = useRouter()
     const params = useParams()
-
+    const navigate = useNavigate()
     const selectedChat = params.id as string
     // Fetch threads if user is loaded
     const { results, status, loadMore } = usePaginatedQuery(api.chat.getUserThreads, user ? { paginationOpts: { numItems: 20 } } : "skip", {
@@ -44,7 +43,7 @@ export function AppSidebar() {
     const pinnedThreads = useQuery(api.chat.getPinnedUserThreads)
 
     const handleSelectChat = (threadId: string) => {
-        router.push(`/chat/${threadId}`)
+        navigate(`/chat/${threadId}`)
     }
 
     const recentThreads: ChatItem[] = (results ?? []).filter((chat) => new Date(chat.updatedAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).map((chat) => ({
@@ -94,7 +93,7 @@ export function AppSidebar() {
                     <h1 className="text-lg font-semibold text-foreground">C3 Chat</h1>
                 </div>
                 <Button asChild className="w-full bg-primary hover:bg-primary/90 text-white mt-2">
-                    <Link href="/">New Chat</Link>
+                    <NavLink to="/">New Chat</NavLink>
                 </Button>
                 <div className="relative mt-2">
                     <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
@@ -169,10 +168,10 @@ export function AppSidebar() {
             <SidebarFooter>
                 {user && (
                     <SidebarMenuButton asChild>
-                        <Link href="/settings">
+                        <NavLink to="/settings">
                             <SettingsIcon className="h-4 w-4 mr-2" />
                             Settings
-                        </Link>
+                        </NavLink>
                     </SidebarMenuButton>
                 )}
                 <div className="flex items-center mt-2"> {/* Added mt-2 for spacing */}

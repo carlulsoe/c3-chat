@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  rewrites: async () => {
+    return [
+      {
+        // 👇 matches all routes except /api
+        source: "/((?!api/).*)",
+        destination: "/static-app-shell",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
