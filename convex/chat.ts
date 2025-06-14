@@ -1,6 +1,7 @@
 import {
   PersistentTextStreaming,
   StreamId,
+  StreamIdValidator,
 } from "@convex-dev/persistent-text-streaming";
 import { components } from "./_generated/api";
 import { v } from "convex/values";
@@ -17,12 +18,15 @@ export const createThread = mutation({
     if (!user) {
       throw new Error("User not authenticated");
     }
+    const streamId = await persistentTextStreaming.createStream(ctx);
+
     const now = Date.now();
     const threadId = await ctx.db.insert("thread", {
       messages: [],
       createdAt: now,
       updatedAt: now,
       userId: user.subject,
+      streamId: streamId,
     });
     return threadId;
   },
@@ -86,6 +90,19 @@ export const getMessages = query({
       }),
     );
     return messages.filter(Boolean);
+  },
+});
+
+// Create a query that returns the chat body.
+export const getChatBody = query({
+  args: {
+    streamId: StreamIdValidator,
+  },
+  handler: async (ctx, args) => {
+    return await persistentTextStreaming.getStreamBody(
+      ctx,
+      args.streamId as StreamId,
+    );
   },
 });
 
