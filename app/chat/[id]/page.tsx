@@ -3,12 +3,13 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import ChatInterfaceWrapper from "./ChatInterfaceWrapper";
 import { auth } from "@clerk/nextjs/server";
+import { PageProps } from '../../../.next/types/app/chat/[id]/page';
 
 
 export default async function ChatIdPage({
     params,
 }: {
-    params: { id: string };
+    params: Promise<PageProps['params']>
 }) {
     const { id } = await params
     let threadId: Id<"thread">;
