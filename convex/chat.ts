@@ -227,9 +227,14 @@ export const streamChat = httpAction(async (ctx, request) => {
     if (!threadId) {
       throw new Error("Thread not found");
     }
-    const messages = await ctx.runQuery(api.chat.getMessages, {
-      threadId,
-    });
+    const rawMessages = await ctx.runQuery(api.chat.getMessages, { threadId });
+    const messages = rawMessages.map(
+      (m: { role: string; message: string }) => ({
+        role: m.role,
+        content: m.message,
+      }),
+    );
+
     const { textStream } = streamText({
       model: google("gemini-2.0-flash"),
       messages,

@@ -24,7 +24,6 @@ export function AiMessage({ message }: AiMessageProps) {
 
     // Only start the stream if we have the token
     const shouldStream = (message.status === "pending" || message.status === "streaming" || message.status === undefined) && !!authToken;
-    console.log(authToken)
     const { text } = useStream(
         api.chat.getChatBody,
         new URL(`https://ceaseless-squirrel-584.convex.site/chat-stream`),
