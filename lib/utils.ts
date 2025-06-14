@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
 export function getConvexSiteUrl() {
   let convexSiteUrl;
   if (process.env.NEXT_PUBLIC_CONVEX_URL?.includes(".cloud")) {

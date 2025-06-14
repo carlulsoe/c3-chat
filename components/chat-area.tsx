@@ -99,7 +99,7 @@ export function ChatArea({ messages }: ChatAreaProps) {
                 ) : (
                     <div className="space-y-6 w-full max-w-3xl mx-auto">
                         {messages.map((message) => (
-                            <MessagePair userMessage={message} aiMessage={message} />
+                            <MessagePair key={message._id} userMessage={message} aiMessage={message} />
                         ))}
                     </div>
                 )}

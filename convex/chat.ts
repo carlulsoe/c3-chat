@@ -181,6 +181,32 @@ export const getUserThreads = query({
   },
 });
 
+export const updateMessageStatus = internalMutation({
+  args: {
+    streamId: StreamIdValidator,
+    status: v.union(
+      v.literal("pending"),
+      v.literal("streaming"),
+      v.literal("done"),
+      v.literal("error"),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const message = await ctx.db
+      .query("threadMessage")
+      .withIndex("by_streamId", (q) =>
+        q.eq("streamId", args.streamId as StreamId),
+      )
+      .first();
+    if (!message) {
+      throw new Error("Message not found");
+    }
+    await ctx.db.patch(message._id, {
+      status: args.status,
+    });
+  },
+});
+
 // Streaming logic (unchanged for now)
 export const streamChat = httpAction(async (ctx, request) => {
   const user = await ctx.auth.getUserIdentity();
@@ -197,6 +223,10 @@ export const streamChat = httpAction(async (ctx, request) => {
     await chunkAppender("Hi there!");
     await chunkAppender("How are you?");
     await chunkAppender("Pretend I'm an AI or something!");
+    await ctx.runMutation(internal.chat.updateMessageStatus, {
+      streamId: streamId,
+      status: "done",
+    });
   };
 
   const response = await persistentTextStreaming.stream(

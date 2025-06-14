@@ -12,10 +12,10 @@ interface AiMessageProps {
 
 export function AiMessage({ message }: AiMessageProps) {
 
-    const { text, status } = useStream(
+    const { text } = useStream(
         api.chat.getChatBody, // The query to call for the full stream body
         new URL(`${getConvexSiteUrl()}/chat-stream`), // The HTTP endpoint for streaming
-        true, // True if this browser session created this chat and should generate the stream
+        message.status === "pending" || message.status === "streaming" || message.status === undefined,
         message.streamId as StreamId // The streamId from the chat database record
     );
 
@@ -27,7 +27,6 @@ export function AiMessage({ message }: AiMessageProps) {
             >
                 {text}
             </div>
-            {status === "error" && <div className="text-red-500">Error</div>}
         </div>
     )
 }

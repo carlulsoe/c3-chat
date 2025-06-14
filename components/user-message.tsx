@@ -11,7 +11,7 @@ export function UserMessage({ message }: UserMessageProps) {
 
 
     return (
-        <div key={message._id} className={`flex justify-end`}>
+        <div key={message._id + "_user"} className={`flex justify-end`}>
             <div
                 className={`max-w-[80%] p-5 rounded-lg bg-muted text-foreground justify-start`}
             >

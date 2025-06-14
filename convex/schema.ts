@@ -25,7 +25,15 @@ export const threadMessage = defineTable({
   message: v.string(),
   role: v.union(v.literal("user"), v.literal("assistant")),
   streamId: StreamIdValidator,
-});
+  status: v.optional(
+    v.union(
+      v.literal("pending"),
+      v.literal("streaming"),
+      v.literal("done"),
+      v.literal("error"),
+    ),
+  ),
+}).index("by_streamId", ["streamId"]);
 
 export default defineSchema({
   thread,
