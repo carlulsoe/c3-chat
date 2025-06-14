@@ -1,3 +1,4 @@
+"use client"
 import { Doc } from "@/convex/_generated/dataModel";
 import React from "react";
 import { UserMessage } from "./user-message";
