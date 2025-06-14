@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/ui/theme-provider"
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata = {
   title: "C3 Chat",
@@ -47,6 +48,7 @@ export default async function RootLayout({
             </ThemeProvider>
           </ConvexClientProvider>
         </ClerkProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
