@@ -290,7 +290,7 @@ export const streamChat = httpAction(async (ctx, request) => {
 
   // Set CORS headers appropriately based on environment.
   const origin =
-    process.env.NODE_ENV === "development"
+    process.env.ENV !== "PRODUCTION"
       ? "http://localhost:3000"
       : "https://chat.carlulsoe.com";
   console.log(origin);
