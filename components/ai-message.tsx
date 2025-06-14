@@ -1,6 +1,6 @@
 "use client"
 import { Doc } from "@/convex/_generated/dataModel";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useStream } from "@convex-dev/persistent-text-streaming/react";
 import { api } from "@/convex/_generated/api";
 import { StreamId } from "@convex-dev/persistent-text-streaming";

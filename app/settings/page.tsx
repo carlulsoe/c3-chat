@@ -18,7 +18,7 @@ export default function SettingsPage() {
     if (storedApiKey !== undefined && apiKey === "") {
       setApiKey(storedApiKey ?? "");
     }
-  }, [storedApiKey]);
+  }, [storedApiKey, apiKey]);
 
   const handleSave = async () => {
     await updateApiKey({ apiKey });

@@ -14,7 +14,7 @@ export default async function ChatIdPage({
     let threadId: Id<"thread">;
     try {
         threadId = id as Id<"thread">;
-    } catch (error) {
+    } catch {
         return <div>Invalid thread id</div>;
     }
     const { getToken } = await auth()

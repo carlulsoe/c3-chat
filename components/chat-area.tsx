@@ -3,11 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ChevronUp, Search, Paperclip, Sparkles, Compass, Code, BookOpen, ChevronDown } from "lucide-react"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent } from "@radix-ui/react-dropdown-menu"
 import { useUser } from "@clerk/nextjs"
 import ChatBox from "./chat-box"
 import { api } from "@/convex/_generated/api"
