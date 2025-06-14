@@ -6,6 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { StreamId } from "@convex-dev/persistent-text-streaming";
 import Markdown from "react-markdown";
 import { useAuth } from "@clerk/nextjs";
+import { getConvexSiteUrl } from "@/lib/utils";
 
 interface StreamingAiMessageProps {
     message: Doc<"threadMessage">
@@ -26,7 +27,7 @@ function StreamingAiMessage({ message }: StreamingAiMessageProps) {
     const shouldStream = (message.status === "pending" || message.status === "streaming" || message.status === undefined) && !!authToken;
     const { text } = useStream(
         api.chat.getChatBody,
-        new URL(`https://ceaseless-squirrel-584.convex.site/chat-stream`),
+        new URL(`${getConvexSiteUrl()}/chat-stream`),
         shouldStream,
         message.streamId as StreamId,
         {
