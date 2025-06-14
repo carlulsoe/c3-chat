@@ -30,7 +30,6 @@ export const createThread = mutation({
     if (!user) {
       throw new Error("User not authenticated");
     }
-    const streamId = await persistentTextStreaming.createStream(ctx);
 
     const now = Date.now();
     const threadId = await ctx.db.insert("thread", {
@@ -38,8 +37,7 @@ export const createThread = mutation({
       createdAt: now,
       updatedAt: now,
       userId: user.subject,
-      streamId: streamId,
-      title: "",
+      title: "...",
       pinned: false,
     });
     await ctx.scheduler.runAfter(0, internal.chat.generateThreadTitle, {
@@ -111,10 +109,12 @@ export const addMessage = mutation({
     if (thread.userId !== user.subject) {
       throw new Error("User not authorized to add message to this thread");
     }
+    const streamId = await persistentTextStreaming.createStream(ctx);
     const messageId = await ctx.db.insert("threadMessage", {
       threadId: args.threadId,
       message: args.message,
       role: args.role,
+      streamId: streamId,
     });
     // Update thread's messages array
     if (thread) {
@@ -185,7 +185,7 @@ export const getUserThreads = query({
 export const streamChat = httpAction(async (ctx, request) => {
   const user = await ctx.auth.getUserIdentity();
   if (!user) {
-    throw new Error("User not authenticated");
+    //throw new Error("User not authenticated");
   }
   const body = (await request.json()) as { streamId: string };
   const generateChat = async (
@@ -207,7 +207,7 @@ export const streamChat = httpAction(async (ctx, request) => {
   );
 
   // Set CORS headers appropriately.
-  response.headers.set("Access-Control-Allow-Origin", "*");
+  response.headers.set("Access-Control-Allow-Origin", "http://localhost:3000");
   response.headers.set("Vary", "Origin");
   return response;
 });

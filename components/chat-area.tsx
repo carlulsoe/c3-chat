@@ -15,6 +15,7 @@ import { useMutation } from 'convex/react';
 import { Id } from "@/convex/_generated/dataModel"
 import { useRouter } from "next/navigation"
 import { Doc } from "@/convex/_generated/dataModel"
+import { MessagePair } from "./message-pair"
 
 interface ChatAreaProps {
     messages: Doc<"threadMessage">[]
@@ -40,15 +41,16 @@ export function ChatArea({ messages }: ChatAreaProps) {
         if (prompt.length === 0) {
             return
         }
+        let threadId: Id<"thread">
         // if there are no messages, create a new thread
         if (messages.length === 0) {
-            const threadId = await createThread({ message: prompt })
+            threadId = await createThread({ message: prompt })
             await addMessage({ threadId, message: prompt, role: "user" })
             router.push(`/chat/${threadId}`)
         }
         // if there are messages, add message to thread
         if (messages.length > 0) {
-            const threadId = messages[0].threadId as Id<"thread">
+            threadId = messages[0].threadId as Id<"thread">
             await addMessage({ threadId, message: prompt, role: "user" })
         }
     }
@@ -97,13 +99,7 @@ export function ChatArea({ messages }: ChatAreaProps) {
                 ) : (
                     <div className="space-y-6 w-full max-w-3xl mx-auto">
                         {messages.map((message) => (
-                            <div key={message._id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
-                                <div
-                                    className={`max-w-[80%] p-5 rounded-lg bg-muted text-foreground justify-start`}
-                                >
-                                    {message.message}
-                                </div>
-                            </div>
+                            <MessagePair userMessage={message} aiMessage={message} />
                         ))}
                     </div>
                 )}

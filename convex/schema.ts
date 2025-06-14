@@ -18,13 +18,13 @@ export const thread = defineTable({
   updatedAt: v.number(),
   title: v.string(),
   pinned: v.boolean(),
-  streamId: StreamIdValidator,
 }).index("by_user", ["userId", "updatedAt"]);
 
 export const threadMessage = defineTable({
   threadId: v.id("thread"),
   message: v.string(),
   role: v.union(v.literal("user"), v.literal("assistant")),
+  streamId: StreamIdValidator,
 });
 
 export default defineSchema({
