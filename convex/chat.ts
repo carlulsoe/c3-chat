@@ -3,17 +3,18 @@ import {
   StreamId,
   StreamIdValidator,
 } from "@convex-dev/persistent-text-streaming";
-import { components, internal } from "./_generated/api";
+import { api, components, internal } from "./_generated/api";
 import { v } from "convex/values";
 import {
   httpAction,
   internalAction,
   internalMutation,
+  internalQuery,
   mutation,
   query,
 } from "./_generated/server";
 import { google } from "@ai-sdk/google";
-import { generateObject, generateText } from "ai";
+import { generateObject, streamText } from "ai";
 import z from "zod";
 
 const persistentTextStreaming = new PersistentTextStreaming(
@@ -211,7 +212,7 @@ export const updateMessageStatus = internalMutation({
 export const streamChat = httpAction(async (ctx, request) => {
   const user = await ctx.auth.getUserIdentity();
   if (!user) {
-    //throw new Error("User not authenticated");
+    throw new Error("User not authenticated");
   }
   const body = (await request.json()) as { streamId: string };
   const generateChat = async (
@@ -220,15 +221,24 @@ export const streamChat = httpAction(async (ctx, request) => {
     streamId: any,
     chunkAppender: (arg0: string) => any,
   ) => {
-    await chunkAppender(
-      "Hi there! I'm a chatbot that can answer questions and help you with your tasks.",
-    );
-    await chunkAppender(
-      "I'm currently learning about the world and how to help you. I'm not very good at it yet, but I'm getting better every day.",
-    );
-    await chunkAppender(
-      "I'm not very good at it yet, but I'm getting better every day.",
-    );
+    const threadId = await ctx.runQuery(internal.chat.getThreadIdFromStreamId, {
+      streamId: streamId,
+    });
+    if (!threadId) {
+      throw new Error("Thread not found");
+    }
+    const messages = await ctx.runQuery(api.chat.getMessages, {
+      threadId,
+    });
+    const { textStream } = streamText({
+      model: google("gemini-2.0-flash"),
+      messages,
+    });
+
+    for await (const chunk of textStream) {
+      await chunkAppender(chunk);
+    }
+
     await ctx.runMutation(internal.chat.updateMessageStatus, {
       streamId: streamId,
       status: "done",
@@ -246,4 +256,23 @@ export const streamChat = httpAction(async (ctx, request) => {
   response.headers.set("Access-Control-Allow-Origin", "http://localhost:3000");
   response.headers.set("Vary", "Origin");
   return response;
+});
+
+export const getThreadIdFromStreamId = internalQuery({
+  args: {
+    streamId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Find the threadMessage with the given streamId
+    const message = await ctx.db
+      .query("threadMessage")
+      .withIndex("by_streamId", (q) => q.eq("streamId", args.streamId))
+      .first();
+
+    if (!message) {
+      return null;
+    }
+
+    return message.threadId;
+  },
 });

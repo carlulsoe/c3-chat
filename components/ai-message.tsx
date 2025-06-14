@@ -1,24 +1,39 @@
 "use client"
 import { Doc } from "@/convex/_generated/dataModel";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useStream } from "@convex-dev/persistent-text-streaming/react";
 import { api } from "@/convex/_generated/api";
 import { StreamId } from "@convex-dev/persistent-text-streaming";
 import Markdown from "react-markdown";
+import { useAuth } from "@clerk/nextjs";
 
 interface AiMessageProps {
     message: Doc<"threadMessage">
 }
 
 export function AiMessage({ message }: AiMessageProps) {
+    const { getToken } = useAuth();
+    const [authToken, setAuthToken] = useState<string | null>(null);
 
+    useEffect(() => {
+        (async () => {
+            const token = await getToken({ template: "convex" });
+            setAuthToken(token);
+        })();
+    }, [getToken]);
+
+    // Only start the stream if we have the token
+    const shouldStream = (message.status === "pending" || message.status === "streaming" || message.status === undefined) && !!authToken;
+    console.log(authToken)
     const { text } = useStream(
-        api.chat.getChatBody, // The query to call for the full stream body
-        new URL(`https://ceaseless-squirrel-584.convex.site/chat-stream`), // The HTTP endpoint for streaming
-        message.status === "pending" || message.status === "streaming" || message.status === undefined,
-        message.streamId as StreamId // The streamId from the chat database record
+        api.chat.getChatBody,
+        new URL(`https://ceaseless-squirrel-584.convex.site/chat-stream`),
+        shouldStream,
+        message.streamId as StreamId,
+        {
+            authToken: authToken,
+        }
     );
-
 
     return (
         <div key={message._id + "_ai"} className={`flex justify-start`}>
