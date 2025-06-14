@@ -220,9 +220,15 @@ export const streamChat = httpAction(async (ctx, request) => {
     streamId: any,
     chunkAppender: (arg0: string) => any,
   ) => {
-    await chunkAppender("Hi there!");
-    await chunkAppender("How are you?");
-    await chunkAppender("Pretend I'm an AI or something!");
+    await chunkAppender(
+      "Hi there! I'm a chatbot that can answer questions and help you with your tasks.",
+    );
+    await chunkAppender(
+      "I'm currently learning about the world and how to help you. I'm not very good at it yet, but I'm getting better every day.",
+    );
+    await chunkAppender(
+      "I'm not very good at it yet, but I'm getting better every day.",
+    );
     await ctx.runMutation(internal.chat.updateMessageStatus, {
       streamId: streamId,
       status: "done",
