@@ -16,10 +16,10 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { PinIcon, Search, SettingsIcon } from "lucide-react" // Assuming SettingsIcon is available, else stick to PinIcon
-import React, { useState, useRef, useEffect } from "react"
+import React, { useRef, useEffect } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
 import Link from "next/link"
-import { useParams, usePathname, useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { usePaginatedQuery, useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 
