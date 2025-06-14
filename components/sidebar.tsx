@@ -19,7 +19,7 @@ import { PinIcon, Search } from "lucide-react"
 import React, { useState } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { useParams, usePathname, useRouter } from "next/navigation"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { thread } from '../convex/schema';
@@ -34,11 +34,16 @@ interface ChatItem {
 
 export function AppSidebar() {
     const { user } = useUser()
+    const router = useRouter()
+    const params = useParams()
 
-    const [selectedChat, setSelectedChat] = useState<string | null>(null)
+    const selectedChat = params.id as string
     // Fetch threads if user is loaded
     const threads = useQuery(api.chat.getUserThreads, user ? undefined : "skip")
-    console.log(threads)
+
+    const handleSelectChat = (threadId: string) => {
+        router.push(`/chat/${threadId}`)
+    }
 
     const pinnedThreads: ChatItem[] = (threads ?? []).filter((chat) => chat.pinned).map((chat) => ({
         id: chat._id.toString(),
@@ -70,7 +75,9 @@ export function AppSidebar() {
                     <h1 className="text-lg font-semibold text-foreground">C3 Chat</h1>
                     {/* You can add a trigger or logo here if needed */}
                 </div>
-                <Button className="w-full bg-primary hover:bg-primary/90 text-white mt-2">New Chat</Button>
+                <Button asChild className="w-full bg-primary hover:bg-primary/90 text-white mt-2">
+                    <Link href="/">New Chat</Link>
+                </Button>
                 <div className="relative mt-2">
                     <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                     <SidebarInput placeholder="Search your threads..." className="pl-8" />
@@ -91,7 +98,7 @@ export function AppSidebar() {
                                         asChild
                                         isActive={selectedChat === thread.id}
                                     >
-                                        <button onClick={() => setSelectedChat(thread.id)}>
+                                        <button onClick={() => handleSelectChat(thread.id)}>
                                             <span className="truncate">{thread.title}</span>
                                         </button>
                                     </SidebarMenuButton>
@@ -110,7 +117,7 @@ export function AppSidebar() {
                                         asChild
                                         isActive={selectedChat === thread.id}
                                     >
-                                        <button onClick={() => setSelectedChat(thread.id)}>
+                                        <button onClick={() => handleSelectChat(thread.id)}>
                                             <span className="truncate">{thread.title}</span>
                                         </button>
                                     </SidebarMenuButton>
@@ -129,7 +136,7 @@ export function AppSidebar() {
                                         asChild
                                         isActive={selectedChat === thread.id}
                                     >
-                                        <button onClick={() => setSelectedChat(thread.id)}>
+                                        <button onClick={() => handleSelectChat(thread.id)}>
                                             <span className="truncate">{thread.title}</span>
                                         </button>
                                     </SidebarMenuButton>

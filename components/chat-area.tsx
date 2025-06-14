@@ -13,7 +13,7 @@ import ChatBox from "./chat-box"
 import { api } from "@/convex/_generated/api"
 import { useMutation } from 'convex/react';
 import { Id } from "@/convex/_generated/dataModel"
-import router from "next/router"
+import { useRouter } from "next/navigation"
 import { Doc } from "@/convex/_generated/dataModel"
 
 interface ChatAreaProps {
@@ -25,6 +25,7 @@ export function ChatArea({ messages }: ChatAreaProps) {
     const user = useUser()
     const addMessage = useMutation(api.chat.addMessage)
     const createThread = useMutation(api.chat.createThread)
+    const router = useRouter()
 
     // Example questions shown in the UI
     const exampleQuestions = [
@@ -49,7 +50,6 @@ export function ChatArea({ messages }: ChatAreaProps) {
         if (messages.length > 0) {
             const threadId = messages[0].threadId as Id<"thread">
             await addMessage({ threadId, message, role: "user" })
-            router.push(`/chat/${threadId}`)
         }
     }
 
