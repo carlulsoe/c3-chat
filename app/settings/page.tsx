@@ -24,34 +24,39 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex flex-col items-center p-4">
-      <div className="flex items-start">
-        <Button variant="ghost" onClick={() => router.push("/")} className="mb-2">
+    <div className="relative min-h-screen w-full bg-background">
+      {/* Back button in top-left, outside centering flex */}
+      <div className="absolute top-4 left-4 z-10">
+        <Button variant="ghost" onClick={() => router.push("/")}
+          className="mb-2">
           <span className="mr-2">←</span> Back
         </Button>
       </div>
-      <div className="w-full max-w-lg">
-        <h1 className="text-2xl font-semibold mb-2">Settings</h1>
-        <p className="text-sm text-muted-foreground mb-4">
-          Configure your application settings below. Your Open Router API key is stored in plain text. I hope convex is secure enough.
-        </p>
-        <div className="flex flex-col gap-3">
-          <div>
-            <label htmlFor="apiKey" className="text-sm font-medium block mb-1">
-              Open Router API Key
-            </label>
-            <Input
-              id="apiKey"
-              type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Enter your Open Router API Key"
-              className="w-full"
-            />
+      {/* Centered settings card */}
+      <div className="flex items-center justify-center min-h-screen w-full">
+        <div className="w-full max-w-lg bg-card rounded-lg shadow-lg p-8 flex flex-col items-center">
+          <h1 className="text-2xl font-semibold mb-2">Settings</h1>
+          <p className="text-sm text-muted-foreground mb-4 text-center">
+            Configure your application settings below. Your Open Router API key is stored in plain text. I hope convex is secure enough.
+          </p>
+          <div className="flex flex-col gap-3 w-full">
+            <div>
+              <label htmlFor="apiKey" className="text-sm font-medium block mb-1">
+                Open Router API Key
+              </label>
+              <Input
+                id="apiKey"
+                type="password"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="Enter your Open Router API Key"
+                className="w-full"
+              />
+            </div>
+            <Button onClick={handleSave} className="mt-2 w-fit self-start">
+              Save API Key
+            </Button>
           </div>
-          <Button onClick={handleSave} className="mt-2 w-fit self-start">
-            Save API Key
-          </Button>
         </div>
       </div>
     </div>
