@@ -17,5 +17,9 @@ export default function Chat() {
     if (!messages) {
         return <div>Loading...</div>;
     }
-    return <ChatInterface messages={messages as Doc<"threadMessage">[]} />
+    return (
+
+        <ChatInterface messages={messages as Doc<"threadMessage">[]} />
+
+    )
 }

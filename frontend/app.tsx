@@ -10,10 +10,7 @@ export default function App() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/chat/:id" loader={async ({ params }) => {
-                    const { id } = await params;
-                    return { id };
-                }} element={<Chat />} />
+                <Route path="/chat/:id" element={<Chat />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>

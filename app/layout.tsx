@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider, RedirectToSignIn, SignedIn, SignedOut } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/ui/theme-provider"
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
@@ -43,8 +43,13 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <SidebarProvider defaultOpen={defaultOpen}>
-                {children}
+                <SignedIn>
+                  {children}
+                </SignedIn>
               </SidebarProvider>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
             </ThemeProvider>
           </ConvexClientProvider>
         </ClerkProvider>
