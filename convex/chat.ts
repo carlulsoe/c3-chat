@@ -293,6 +293,8 @@ export const streamChat = httpAction(async (ctx, request) => {
     process.env.NODE_ENV === "development"
       ? "http://localhost:3000"
       : "https://chat.carlulsoe.com";
+  console.log(origin);
+  console.log(process.env.NODE_ENV);
   response.headers.set("Access-Control-Allow-Origin", origin);
   response.headers.set("Vary", "Origin");
   return response;
