@@ -6,9 +6,11 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SettingsPage() {
   const [apiKey, setApiKey] = useState("");
+  const [showApiKey, setShowApiKey] = useState(false);
   const storedApiKey = useQuery(api.settings.getApiKey);
   const updateApiKey = useMutation(api.settings.updateApiKey);
   const router = useRouter();
@@ -22,6 +24,10 @@ export default function SettingsPage() {
     await updateApiKey({ apiKey });
     setApiKey("");
   };
+
+  // Handlers for hold-to-show
+  const handleShowDown = () => setShowApiKey(true);
+  const handleShowUp = () => setShowApiKey(false);
 
   return (
     <div className="relative min-h-screen w-full bg-background">
@@ -44,14 +50,31 @@ export default function SettingsPage() {
               <label htmlFor="apiKey" className="text-sm font-medium block mb-1">
                 Open Router API Key
               </label>
-              <Input
-                id="apiKey"
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Enter your Open Router API Key"
-                className="w-full"
-              />
+              <div className="flex items-center gap-2 w-full">
+                <Input
+                  id="apiKey"
+                  type={showApiKey ? "text" : "password"}
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="Enter your Open Router API Key"
+                  className="w-full"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label={showApiKey ? "Hide API Key" : "Show API Key"}
+                  onMouseDown={handleShowDown}
+                  onMouseUp={handleShowUp}
+                  onMouseLeave={handleShowUp}
+                  onTouchStart={handleShowDown}
+                  onTouchEnd={handleShowUp}
+                  onTouchCancel={handleShowUp}
+                  tabIndex={-1}
+                >
+                  {showApiKey ? <EyeOff size={18} /> : <Eye size={18} />}
+                </Button>
+              </div>
             </div>
             <Button onClick={handleSave} className="mt-2 w-fit self-start">
               Save API Key
