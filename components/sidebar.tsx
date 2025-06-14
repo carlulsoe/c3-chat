@@ -89,17 +89,18 @@ export function AppSidebar() {
 
     // Helper to render pin button
     const PinButton = ({ threadId, isPinned }: { threadId: string, isPinned?: boolean }) => (
-        <button
+        <Button
             type="button"
-            className="ml-2 p-1 hover:bg-accent rounded"
+            variant="ghost"
+            className="ml-2 hover:bg-primary/10 rounded-full p-0"
             title={isPinned ? "Unpin" : "Pin"}
             onClick={async (e) => {
                 e.stopPropagation();
                 await setThreadPinned({ threadId: threadId as Id<'thread'>, pinned: !isPinned })
             }}
         >
-            <PinIcon className={`h-4 w-4 ${isPinned ? "fill-primary text-primary" : "text-gray-400"}`} />
-        </button>
+            <PinIcon className={`h-3 w-3 ${isPinned ? "fill-primary text-primary" : "text-gray-400"}`} />
+        </Button>
     )
 
     return (
