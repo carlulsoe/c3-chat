@@ -11,7 +11,7 @@ interface AiMessageProps {
     message: Doc<"threadMessage">
 }
 
-export function AiMessage({ message }: AiMessageProps) {
+function AiMessage({ message }: AiMessageProps) {
     const { getToken } = useAuth();
     const [authToken, setAuthToken] = useState<string | null>(null);
 
@@ -44,3 +44,5 @@ export function AiMessage({ message }: AiMessageProps) {
         </div>
     )
 }
+
+export default AiMessage;

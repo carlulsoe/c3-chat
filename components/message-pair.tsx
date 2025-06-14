@@ -2,13 +2,14 @@
 import { Doc } from "@/convex/_generated/dataModel";
 import React from "react";
 import { UserMessage } from "./user-message";
-import { AiMessage } from "./ai-message";
+import dynamic from "next/dynamic";
 
 
 interface MessagePairProps {
     userMessage: Doc<"threadMessage">
     aiMessage: Doc<"threadMessage">
 }
+const AiMessage = dynamic(() => import("./ai-message"), { ssr: false });
 
 export function MessagePair({ userMessage, aiMessage }: MessagePairProps) {
 

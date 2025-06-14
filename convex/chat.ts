@@ -240,9 +240,9 @@ export const streamChat = httpAction(async (ctx, request) => {
   const body = (await request.json()) as { streamId: string };
   const generateChat = async (
     ctx: any,
-    request: any,
-    streamId: any,
-    chunkAppender: (arg0: string) => any,
+    request: Request,
+    streamId: string,
+    chunkAppender: (chunk: string) => Promise<void>,
   ) => {
     const threadId = await ctx.runQuery(internal.chat.getThreadIdFromStreamId, {
       streamId: streamId,
@@ -283,8 +283,12 @@ export const streamChat = httpAction(async (ctx, request) => {
     generateChat,
   );
 
-  // Set CORS headers appropriately.
-  response.headers.set("Access-Control-Allow-Origin", "http://localhost:3000");
+  // Set CORS headers appropriately based on environment.
+  const origin =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000"
+      : "https://chat.carlulsoe.com";
+  response.headers.set("Access-Control-Allow-Origin", origin);
   response.headers.set("Vary", "Origin");
   return response;
 });
