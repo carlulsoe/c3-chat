@@ -1,7 +1,7 @@
 
 import NotFound from "@/frontend/not-found";
-import Home from "@/frontend/page";
-import Settings from "@/frontend/settings/page";
+import Home from "@/frontend/apphome";
+import Settings from "@/frontend/settings";
 import { BrowserRouter, Route, Routes } from "react-router";
 import Chat from "@/frontend/chat";
 

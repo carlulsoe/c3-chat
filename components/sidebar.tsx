@@ -132,17 +132,13 @@ export function AppSidebar() {
                                     <SidebarMenuItem key={thread._id.toString()}>
                                         <SidebarMenuButton
                                             asChild
+                                            onClick={() => handleSelectChat(thread._id.toString())}
                                             isActive={selectedChat === thread._id.toString()}
                                         >
                                             <div className="flex items-center w-full">
-                                                <button
-                                                    onClick={() => handleSelectChat(thread._id.toString())}
-                                                    className="truncate flex-1 text-left"
-                                                    style={{ background: "none", border: "none", padding: 0, margin: 0 }}
-                                                    tabIndex={0}
-                                                >
+                                                <span className="truncate flex-1 w-full text-left">
                                                     {thread.title}
-                                                </button>
+                                                </span>
                                                 <PinButton threadId={thread._id.toString()} isPinned={thread.pinned} />
                                             </div>
                                         </SidebarMenuButton>
@@ -161,17 +157,14 @@ export function AppSidebar() {
                                             asChild
                                             isActive={selectedChat === thread.id}
                                         >
-                                            <div className="flex items-center w-full">
-                                                <button
-                                                    onClick={() => handleSelectChat(thread.id)}
-                                                    className="truncate flex-1 text-left"
-                                                    style={{ background: "none", border: "none", padding: 0, margin: 0 }}
-                                                    tabIndex={0}
-                                                >
+                                            <NavLink to={`/chat/${thread.id}`}>
+
+                                                <span className="truncate flex-1 w-full text-left">
                                                     {thread.title}
-                                                </button>
+                                                </span>
                                                 <PinButton threadId={thread.id} isPinned={thread.isPinned} />
-                                            </div>
+
+                                            </NavLink>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 ))}
@@ -187,16 +180,12 @@ export function AppSidebar() {
                                         <SidebarMenuButton
                                             asChild
                                             isActive={selectedChat === thread.id}
+                                            onClick={() => handleSelectChat(thread.id)}
                                         >
                                             <div className="flex items-center w-full">
-                                                <button
-                                                    onClick={() => handleSelectChat(thread.id)}
-                                                    className="truncate flex-1 text-left"
-                                                    style={{ background: "none", border: "none", padding: 0, margin: 0 }}
-                                                    tabIndex={0}
-                                                >
+                                                <span className="truncate flex-1 w-full text-left">
                                                     {thread.title}
-                                                </button>
+                                                </span>
                                                 <PinButton threadId={thread.id} isPinned={thread.isPinned} />
                                             </div>
                                         </SidebarMenuButton>

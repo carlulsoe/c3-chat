@@ -1,5 +1,3 @@
-"use client"
-
 import { NavLink } from "react-router";
 
 export default function NotFound() {
