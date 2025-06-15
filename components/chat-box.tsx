@@ -27,12 +27,29 @@ interface ChatBoxProps {
  */
 const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMessage, placeholder = "Type your message here..." }) => {
     const [selectedModel, setSelectedModel] = useState(models[0])
-    const handleSendMessage = (e: React.FormEvent) => {
-        e.preventDefault()
+
+    // Extracted send logic to be reusable
+    const sendMessage = () => {
         const cleanedInput = inputValue.trim()
         if (cleanedInput) {
             onSendMessage(cleanedInput, selectedModel.model)
             setInputValue("")
+        }
+    }
+
+    const handleSendMessage = (e: React.FormEvent) => {
+        e.preventDefault()
+        sendMessage()
+    }
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault()
+            // Check if input is not empty before sending, mirroring the Button's disabled logic.
+            // sendMessage itself also checks, but this prevents calling preventDefault unnecessarily if input is empty.
+            if (inputValue.trim()) {
+                sendMessage()
+            }
         }
     }
 
@@ -43,6 +60,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
                     <textarea
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         placeholder={placeholder}
                         className="w-full bg-transparent border-none outline-none resize-none text-primary placeholder-primary/50 p-4 text-base h-20"
                         rows={4}
