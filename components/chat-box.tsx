@@ -4,10 +4,11 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { ChevronDown, ChevronUp, Bot, Sparkles, Brain, Zap, DollarSign } from "lucide-react"
+import { ChevronDown, ChevronUp, Bot, Sparkles, Brain, Zap, DollarSign, Info } from "lucide-react"
 import { models } from "@/lib/models"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
 
 /**
  * Props for the ChatBox component.
@@ -46,6 +47,8 @@ const getProviderName = (model: string) => {
     return 'Google'
 }
 
+const defaultModel = "gemini-2.0-flash"
+
 /**
  * ChatBox is the component that provides the text input area for users to type and send messages.
  * It also includes options for selecting a model and attaching files (though file attachment is a placeholder).
@@ -58,12 +61,12 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
     const availableModels = (apiKey ? models : models.filter((m) => !m.model.includes("/")))
 
     // Selected model state – default to the first available option
-    const [selectedModel, setSelectedModel] = useState(availableModels[0])
+    const [selectedModel, setSelectedModel] = useState(availableModels.find((m) => m.model === defaultModel))
 
     // Ensure selected model is always one of the available models
     useEffect(() => {
         if (!availableModels.find((m) => m.model === selectedModel?.model)) {
-            setSelectedModel(availableModels[0])
+            setSelectedModel(availableModels.find((m) => m.model === defaultModel))
         }
     }, [apiKey, availableModels, selectedModel?.model])
 
@@ -71,7 +74,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
     const sendMessage = () => {
         const cleanedInput = inputValue.trim()
         if (cleanedInput) {
-            onSendMessage(cleanedInput, selectedModel.model)
+            onSendMessage(cleanedInput, selectedModel?.model ?? "")
             setInputValue("")
         }
     }
@@ -140,9 +143,16 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
                                                     {model.isOpenRouter ? (
                                                         <DollarSign className="h-4 w-4" />
                                                     ) : (
-                                                        <span className="h-4 w-4 flex items-center justify-center text-muted-foreground">
-                                                            <span className="text-xs font-bold">Free</span>
-                                                        </span>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="h-4 w-4 flex items-center justify-center text-muted-foreground cursor-pointer">
+                                                                    <Info className="h-4 w-4" />
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent side="right" className="text-xs">
+                                                                Free but rate limited
+                                                            </TooltipContent>
+                                                        </Tooltip>
                                                     )}
                                                 </div>
                                             </div>
