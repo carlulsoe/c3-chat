@@ -16,11 +16,16 @@ export function SidebarChatButton({ selectedChat, thread, isPinned }: SidebarCha
             asChild
             isActive={selectedChat === thread._id.toString()}
         >
-            <div className="flex items-center justify-between w-full">
-                <NavLink to={`/chat/${thread._id.toString()}`} className="flex-1 truncate text-left my-0">
-                    <span>{thread.title}</span>
+            <div className="relative w-full">
+                <NavLink
+                    to={`/chat/${thread._id.toString()}`}
+                    className="flex items-center w-full pr-6 py-2 truncate text-left"
+                >
+                    <span className="truncate">{thread.title}</span>
                 </NavLink>
-                <PinButton threadId={thread._id} isPinned={isPinned} />
+                <div className="absolute right-1 top-1/2 -translate-y-1/2">
+                    <PinButton threadId={thread._id} isPinned={isPinned} />
+                </div>
             </div>
         </SidebarMenuButton>
     )
