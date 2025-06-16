@@ -131,14 +131,16 @@ export default function SettingsPage() {
           </DialogHeader>
           <DialogFooter className="justify-between w-full flex flex-row gap-2">
 
-            <Button
-              variant="destructive"
-              onClick={handleClear}
-              className="w-full sm:w-auto"
-            >
-              <Trash2 size={16} className="mr-2" />
-              Clear API Key
-            </Button>
+            <div className="flex-1 flex justify-start">
+              <Button
+                variant="destructive"
+                onClick={handleClear}
+                className="w-full sm:w-auto"
+              >
+                <Trash2 size={16} className="mr-2" />
+                Clear API Key
+              </Button>
+            </div>
             <DialogClose asChild>
               <Button
                 variant="outline"
