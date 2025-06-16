@@ -19,19 +19,13 @@ import { PinIcon, Search, SettingsIcon } from "lucide-react"
 import React, { useRef, useEffect } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
 import { useParams } from "react-router"
-import { useQuery, useMutation } from "convex/react"
+import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { NavLink } from "react-router"
-import { Id } from "@/convex/_generated/dataModel"
+import { Doc } from "@/convex/_generated/dataModel"
 import { useStableLocalStoragePaginatedQuery } from "@/hooks/useStableQuery"
+import { SidebarChatButton } from "./sidebar-chat-button"
 
-
-interface ChatItem {
-    id: string
-    title: string
-    isPinned?: boolean
-    lastUpdated: Date
-}
 
 export function AppSidebar() {
     const { user } = useUser()
@@ -42,21 +36,10 @@ export function AppSidebar() {
         initialNumItems: 20,
     })
     const pinnedThreads = useQuery(api.chat.getPinnedUserThreads)
-    const setThreadPinned = useMutation(api.chat.setThreadPinned)
 
-    const recentThreads: ChatItem[] = (results ?? []).filter((chat) => new Date(chat.updatedAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).map((chat) => ({
-        id: chat._id.toString(),
-        title: chat.title,
-        isPinned: chat.pinned,
-        lastUpdated: new Date(chat.updatedAt),
-    }))
+    const recentThreads: Doc<"thread">[] = (results ?? []).filter((chat) => new Date(chat.updatedAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
 
-    const olderThreads: ChatItem[] = (results ?? []).filter((chat) => new Date(chat.updatedAt) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).map((chat) => ({
-        id: chat._id.toString(),
-        title: chat.title,
-        isPinned: chat.pinned,
-        lastUpdated: new Date(chat.updatedAt),
-    }))
+    const olderThreads: Doc<"thread">[] = (results ?? []).filter((chat) => new Date(chat.updatedAt) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
 
     const sidebarContentRef = useRef<HTMLDivElement>(null)
 
@@ -83,21 +66,7 @@ export function AppSidebar() {
         }
     }, [status, loadMore])
 
-    // Helper to render pin button
-    const PinButton = ({ threadId, isPinned }: { threadId: string, isPinned?: boolean }) => (
-        <Button
-            type="button"
-            variant="ghost"
-            className="ml-2 hover:bg-primary/10 rounded-full p-0"
-            title={isPinned ? "Unpin" : "Pin"}
-            onClick={async (e) => {
-                e.stopPropagation();
-                await setThreadPinned({ threadId: threadId as Id<'thread'>, pinned: !isPinned })
-            }}
-        >
-            <PinIcon className={`h-3 w-3 ${isPinned ? "fill-primary text-primary" : "text-gray-400"}`} />
-        </Button>
-    )
+
 
     return (
         <Sidebar>
@@ -126,17 +95,7 @@ export function AppSidebar() {
                             <SidebarMenu>
                                 {pinnedThreads?.map((thread) => (
                                     <SidebarMenuItem key={thread._id.toString()}>
-                                        <SidebarMenuButton
-                                            asChild
-                                            isActive={selectedChat === thread._id.toString()}
-                                        >
-                                            <div className="flex items-center justify-between w-full">
-                                                <NavLink to={`/chat/${thread._id.toString()}`} className="flex-1 truncate text-left my-0">
-                                                    <span>{thread.title}</span>
-                                                </NavLink>
-                                                <PinButton threadId={thread._id.toString()} isPinned={thread.pinned} />
-                                            </div>
-                                        </SidebarMenuButton>
+                                        <SidebarChatButton selectedChat={selectedChat} thread={thread} isPinned={thread.pinned} />
                                     </SidebarMenuItem>
                                 ))}
                             </SidebarMenu>
@@ -147,18 +106,8 @@ export function AppSidebar() {
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {recentThreads?.map((thread) => (
-                                    <SidebarMenuItem key={thread.id}>
-                                        <SidebarMenuButton
-                                            asChild
-                                            isActive={selectedChat === thread.id}
-                                        >
-                                            <div className="flex items-center justify-between w-full">
-                                                <NavLink to={`/chat/${thread.id}`} className="flex-1 truncate text-left">
-                                                    <span>{thread.title}</span>
-                                                </NavLink>
-                                                <PinButton threadId={thread.id} isPinned={thread.isPinned} />
-                                            </div>
-                                        </SidebarMenuButton>
+                                    <SidebarMenuItem key={thread._id.toString()}>
+                                        <SidebarChatButton selectedChat={selectedChat} thread={thread} isPinned={thread.pinned} />
                                     </SidebarMenuItem>
                                 ))}
                             </SidebarMenu>
@@ -169,18 +118,8 @@ export function AppSidebar() {
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {olderThreads.map((thread) => (
-                                    <SidebarMenuItem key={thread.id}>
-                                        <SidebarMenuButton
-                                            asChild
-                                            isActive={selectedChat === thread.id}
-                                        >
-                                            <div className="flex items-center justify-between w-full">
-                                                <NavLink to={`/chat/${thread.id}`} className="flex-1 truncate text-left">
-                                                    <span>{thread.title}</span>
-                                                </NavLink>
-                                                <PinButton threadId={thread.id} isPinned={thread.isPinned} />
-                                            </div>
-                                        </SidebarMenuButton>
+                                    <SidebarMenuItem key={thread._id.toString()}>
+                                        <SidebarChatButton selectedChat={selectedChat} thread={thread} isPinned={thread.pinned} />
                                     </SidebarMenuItem>
                                 ))}
                             </SidebarMenu>
