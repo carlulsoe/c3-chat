@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { ChevronDown, ChevronUp, Paperclip, Search } from "lucide-react"
+import { ChevronDown, ChevronUp } from "lucide-react"
 import { models } from "@/lib/models"
 
 /**
@@ -86,26 +86,6 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="text-primary hover:text-primary/80 hover:bg-primary/10 px-3 py-2 h-auto"
-                            >
-                                <Search className="h-4 w-4 mr-2" />
-                                <span className="text-sm">Search</span>
-                            </Button>
-
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="text-primary hover:text-primary/80 hover:bg-primary/10 px-3 py-2 h-auto"
-                            >
-                                <Paperclip className="h-4 w-4 mr-2" />
-                                <span className="text-sm">Attach</span>
-                            </Button>
-
                             <Button
                                 type="submit"
                                 size="icon"
