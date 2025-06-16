@@ -44,8 +44,7 @@ export function ChatArea({ messages }: ChatAreaProps) {
         let threadId: Id<"thread">
         // if there are no messages, create a new thread
         if (messages.length === 0) {
-            threadId = await createThread({ message: prompt })
-            await addMessage({ threadId, message: prompt, role: "user", model: model })
+            threadId = await createThread({ message: prompt, model: model })
             navigate(`/chat/${threadId}`)
         }
         // if there are messages, add message to thread

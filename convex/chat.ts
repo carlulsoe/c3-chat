@@ -31,6 +31,7 @@ const persistentTextStreaming = new PersistentTextStreaming(
 export const createThread = mutation({
   args: {
     message: v.string(),
+    model: v.string(),
   },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
@@ -47,10 +48,22 @@ export const createThread = mutation({
       title: "...",
       pinned: false,
     });
-    await ctx.scheduler.runAfter(0, internal.chat.generateThreadTitle, {
+    const addMessageMutation = ctx.runMutation(api.chat.addMessage, {
       threadId,
       message: args.message,
+      role: "user",
+      model: args.model,
     });
+    const generateThreadTitleMutation = ctx.scheduler.runAfter(
+      0,
+      internal.chat.generateThreadTitle,
+      {
+        threadId,
+        message: args.message,
+      },
+    );
+    await addMessageMutation;
+    await generateThreadTitleMutation;
     return threadId;
   },
 });
