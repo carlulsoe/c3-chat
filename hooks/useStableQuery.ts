@@ -112,3 +112,51 @@ export const useStablePaginatedQuery = ((name, ...args) => {
 
   return stored.current;
 }) as typeof usePaginatedQuery;
+
+export const useStableLocalStoragePaginatedQuery = ((name, ...args) => {
+  // Memoize the storageKey so it only changes when args change
+  const storageKey = useMemo(
+    () => `useStableLocalStoragePaginatedQuery:${JSON.stringify(args)}`,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(args)],
+  );
+
+  // Memoize the initial value from localStorage (if any)
+  const initialValue = useMemo(() => {
+    try {
+      const storedValue =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem(storageKey)
+          : null;
+      if (storedValue !== null) {
+        return JSON.parse(storedValue);
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+    return undefined;
+  }, [storageKey]);
+
+  const result = usePaginatedQuery(name, ...args);
+  const stored = useRef(initialValue !== undefined ? initialValue : result);
+
+  // Update stored.current and localStorage once fresh data has finished loading
+  useMemo(() => {
+    if (
+      result.status !== "LoadingMore" &&
+      result.status !== "LoadingFirstPage"
+    ) {
+      stored.current = result;
+      try {
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(storageKey, JSON.stringify(result));
+        }
+      } catch {
+        // Ignore localStorage errors
+      }
+    }
+    // No dependency on storageKey needed beyond the array below
+  }, [result, storageKey]);
+
+  return stored.current;
+}) as typeof usePaginatedQuery;

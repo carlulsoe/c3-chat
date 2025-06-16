@@ -19,10 +19,11 @@ import { PinIcon, Search, SettingsIcon } from "lucide-react"
 import React, { useRef, useEffect } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
 import { useParams } from "react-router"
-import { usePaginatedQuery, useQuery, useMutation } from "convex/react"
+import { useQuery, useMutation } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { NavLink } from "react-router"
 import { Id } from "@/convex/_generated/dataModel"
+import { useStableLocalStoragePaginatedQuery } from "@/hooks/useStableQuery"
 
 
 interface ChatItem {
@@ -37,7 +38,7 @@ export function AppSidebar() {
     const params = useParams()
     const selectedChat = params.id as string
     // Fetch threads if user is loaded
-    const { results, status, loadMore } = usePaginatedQuery(api.chat.getUserThreads, user ? { paginationOpts: { numItems: 20 } } : "skip", {
+    const { results, status, loadMore } = useStableLocalStoragePaginatedQuery(api.chat.getUserThreads, user ? { paginationOpts: { numItems: 20 } } : "skip", {
         initialNumItems: 20,
     })
     const pinnedThreads = useQuery(api.chat.getPinnedUserThreads)
@@ -130,7 +131,7 @@ export function AppSidebar() {
                                             isActive={selectedChat === thread._id.toString()}
                                         >
                                             <div className="flex items-center justify-between w-full">
-                                                <NavLink to={`/chat/${thread._id.toString()}`} className="flex-1 truncate text-left">
+                                                <NavLink to={`/chat/${thread._id.toString()}`} className="flex-1 truncate text-left my-0">
                                                     <span>{thread.title}</span>
                                                 </NavLink>
                                                 <PinButton threadId={thread._id.toString()} isPinned={thread.pinned} />
