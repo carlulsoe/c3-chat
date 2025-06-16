@@ -8,10 +8,6 @@ export const models = [
     name: "Gemini 2.5 Flash",
   },
   {
-    model: "openai/gpt-4o",
-    name: "GPT-4o (OpenRouter)",
-  },
-  {
     model: "deepseek/deepseek-r1-0528-qwen3-8b:free",
     name: "DeepSeek R1 8b",
   },

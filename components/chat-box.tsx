@@ -1,11 +1,13 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { models } from "@/lib/models"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 
 /**
  * Props for the ChatBox component.
@@ -26,7 +28,21 @@ interface ChatBoxProps {
  * It also includes options for selecting a model and attaching files (though file attachment is a placeholder).
  */
 const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMessage, placeholder = "Type your message here..." }) => {
-    const [selectedModel, setSelectedModel] = useState(models[0])
+    // Fetch the user's OpenRouter API key (null if not set, undefined while loading)
+    const apiKey = useQuery(api.settings.getApiKey, {})
+
+    // Determine which models should be available based on the presence of the key
+    const availableModels = (apiKey ? models : models.filter((m) => !m.model.includes("/")))
+
+    // Selected model state – default to the first available option
+    const [selectedModel, setSelectedModel] = useState(availableModels[0])
+
+    // Ensure selected model is always one of the available models
+    useEffect(() => {
+        if (!availableModels.find((m) => m.model === selectedModel?.model)) {
+            setSelectedModel(availableModels[0])
+        }
+    }, [apiKey, availableModels, selectedModel?.model])
 
     // Extracted send logic to be reusable
     const sendMessage = () => {
@@ -76,7 +92,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent side="top" align="start" className="bg-background border-border">
-                                    {models?.map((model) => (
+                                    {availableModels?.map((model) => (
                                         <DropdownMenuItem key={model.name} className="text-primary hover:bg-primary/10" onClick={() => setSelectedModel(model)}>
                                             {model.name}
                                         </DropdownMenuItem>

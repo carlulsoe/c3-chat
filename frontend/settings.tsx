@@ -12,6 +12,7 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
   const storedApiKey = useQuery(api.settings.getApiKey);
   const updateApiKey = useMutation(api.settings.updateApiKey);
+  const clearApiKey = useMutation(api.settings.clearApiKey);
   const navigate = useNavigate();
   useEffect(() => {
     if (storedApiKey !== undefined && apiKey === "") {
@@ -21,9 +22,17 @@ export default function SettingsPage() {
 
   const handleSave = async () => {
     await updateApiKey({ apiKey });
-    setApiKey("");
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
+  };
+
+  const handleClear = async () => {
+    // Show a modal to confirm clearing the API key
+    if (!window.confirm("Are you sure you want to clear your Open Router API key? This action cannot be undone.")) {
+      return;
+    }
+    await clearApiKey({});
+    setApiKey("");
   };
 
   // Handlers for hold-to-show
@@ -80,12 +89,21 @@ export default function SettingsPage() {
                 </Button>
               </div>
             </div>
-            <Button onClick={handleSave} className="mt-2 w-fit self-start">
-              Save API Key
-            </Button>
-            {saved && (
-              <span className="text-sm text-green-600 mt-2 ml-2">Saved!</span>
-            )}
+            <div className="flex flex-row items-center gap-3 w-full justify-between">
+              <Button onClick={handleSave} className=" w-fit self-start">
+                Save API Key
+              </Button>
+              {saved && (
+                <span className="text-sm text-green-600 mt-2 ml-2">Saved!</span>
+              )}
+              <Button
+                variant="destructive"
+                className="w-fit self-start"
+                onClick={handleClear}
+              >
+                Clear API Key
+              </Button>
+            </div>
           </div>
         </div>
       </div>

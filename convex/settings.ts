@@ -40,6 +40,25 @@ export const updateApiKey = mutation({
   },
 });
 
+export const clearApiKey = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+    const existing = await ctx.db
+      .query("settings")
+      .withIndex("by_user", (q) => q.eq("userId", user.subject))
+      .first();
+    if (!existing) {
+      throw new Error("No settings found");
+    }
+    await ctx.db.delete(existing._id);
+    return { deleted: true };
+  },
+});
+
 /**
  * Query to get the Open Router API key for the current user.
  * Returns the apiKey if it exists, otherwise null.
