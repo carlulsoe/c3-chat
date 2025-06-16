@@ -14,6 +14,10 @@ import {
   query,
 } from "./_generated/server";
 import { google } from "@ai-sdk/google";
+import {
+  openrouter as defaultOpenrouter,
+  createOpenRouter,
+} from "@openrouter/ai-sdk-provider";
 import { generateObject, streamText } from "ai";
 import z from "zod";
 import { Doc } from "./_generated/dataModel";
@@ -263,22 +267,57 @@ export const streamChat = httpAction(async (ctx, request) => {
       }));
     // get the model from the last message
     const model = rawMessages?.[rawMessages.length - 1]?.model;
-    console.log(model);
-    const { textStream } = streamText({
-      system:
-        "You are C3 Chat, an intelligent and friendly AI assistant. You are participating in a conversation with a user and have access to the full chat thread for context. Carefully read the conversation history and provide thoughtful, relevant, and concise responses to the user's latest message. Always reply in the same language as the user's message. If the user asks a question, answer it clearly and helpfully. If the context is unclear, politely ask for clarification. Avoid making up information, and keep your responses helpful and engaging.",
-      model: google(model ?? "gemini-2.0-flash"),
-      messages,
-    });
 
-    for await (const chunk of textStream) {
-      await chunkAppender(chunk);
+    // Fetch user-specific OpenRouter API key
+    const userApiKey = await ctx.runQuery(api.settings.getApiKey, {});
+
+    // Decide which OpenRouter provider instance to use
+    const openrouterProvider = userApiKey
+      ? createOpenRouter({ apiKey: userApiKey, compatibility: "strict" })
+      : defaultOpenrouter;
+
+    const modelProvider =
+      model && model.startsWith("gemini")
+        ? google(model)
+        : model
+          ? openrouterProvider(model)
+          : google("gemini-2.0-flash");
+
+    try {
+      const { textStream } = streamText({
+        system:
+          "You are C3 Chat, an intelligent and friendly AI assistant. You are participating in a conversation with a user and have access to the full chat thread for context. Carefully read the conversation history and provide thoughtful, relevant, and concise responses to the user's latest message. Always reply in the same language as the user's message. If the user asks a question, answer it clearly and helpfully. If the context is unclear, politely ask for clarification. Avoid making up information, and keep your responses helpful and engaging.",
+        model: modelProvider,
+        messages,
+      });
+
+      for await (const chunk of textStream) {
+        await chunkAppender(chunk);
+      }
+
+      await ctx.runMutation(internal.chat.updateMessageStatus, {
+        streamId: streamId,
+        status: "done",
+      });
+    } catch (error) {
+      // Log for debugging, but ensure graceful degradation for user
+      console.error("Error generating chat response:", error);
+
+      // Update message status to error
+      await ctx.runMutation(internal.chat.updateMessageStatus, {
+        streamId: streamId,
+        status: "error",
+      });
+
+      // Attempt to send an error message back to the stream so the UI can display it
+      try {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error occurred";
+        await chunkAppender(`Error: ${errorMessage}`);
+      } catch {
+        // Ignore any errors while sending the error message
+      }
     }
-
-    await ctx.runMutation(internal.chat.updateMessageStatus, {
-      streamId: streamId,
-      status: "done",
-    });
   };
 
   const response = await persistentTextStreaming.stream(
