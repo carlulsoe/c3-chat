@@ -1,4 +1,4 @@
-export const models = [
+export const models: Model[] = [
   {
     model: "gemini-2.0-flash",
     name: "Gemini 2.0 Flash",
@@ -40,3 +40,9 @@ export const models = [
     isOpenRouter: true,
   },
 ].sort((a, b) => a.name.localeCompare(b.name));
+
+export interface Model {
+  model: string;
+  name: string;
+  isOpenRouter: boolean;
+}

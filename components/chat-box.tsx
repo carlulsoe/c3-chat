@@ -3,12 +3,11 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { ChevronDown, ChevronUp, Bot, Sparkles, Brain, Zap, DollarSign, Info } from "lucide-react"
+import { ChevronUp } from "lucide-react"
 import { models } from "@/lib/models"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
+import { ModelSelector, defaultModel } from "./model-selector"
 
 /**
  * Props for the ChatBox component.
@@ -25,31 +24,6 @@ interface ChatBoxProps {
 }
 
 /**
- * Get the appropriate icon for a given model
- */
-const getModelIcon = (modelName: string) => {
-    const name = modelName.toLowerCase()
-    if (name.includes('gemini')) return <Sparkles className="h-4 w-4" />
-    if (name.includes('deepseek')) return <Zap className="h-4 w-4" />
-    if (name.includes('claude')) return <Bot className="h-4 w-4" />
-    if (name.includes('o3') || name.includes('o4')) return <Brain className="h-4 w-4" />
-    return <Bot className="h-4 w-4" />
-}
-
-/**
- * Get provider name from model string
- */
-const getProviderName = (model: string) => {
-    if (model.includes('/')) {
-        const provider = model.split('/')[0]
-        return provider.charAt(0).toUpperCase() + provider.slice(1)
-    }
-    return 'Google'
-}
-
-const defaultModel = "gemini-2.0-flash"
-
-/**
  * ChatBox is the component that provides the text input area for users to type and send messages.
  * It also includes options for selecting a model and attaching files (though file attachment is a placeholder).
  */
@@ -61,12 +35,12 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
     const availableModels = (apiKey ? models : models.filter((m) => !m.model.includes("/")))
 
     // Selected model state – default to the first available option
-    const [selectedModel, setSelectedModel] = useState(availableModels.find((m) => m.model === defaultModel))
+    const [selectedModel, setSelectedModel] = useState(availableModels.find((m) => m.model === defaultModel.model))
 
     // Ensure selected model is always one of the available models
     useEffect(() => {
         if (!availableModels.find((m) => m.model === selectedModel?.model)) {
-            setSelectedModel(availableModels.find((m) => m.model === defaultModel))
+            setSelectedModel(availableModels.find((m) => m.model === defaultModel.model))
         }
     }, [apiKey, availableModels, selectedModel?.model])
 
@@ -110,56 +84,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
 
                     <div className="flex items-center justify-between p-4 pt-0">
                         <div className="flex items-center gap-3">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="text-primary hover:text-primary/80 hover:bg-primary/10 p-2 h-auto">
-                                        <span className="text-sm">{selectedModel?.name}</span>
-                                        <ChevronDown className="h-4 w-4 ml-1" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent side="top" align="start" className="bg-background border-border w-80">
-                                    {availableModels?.map((model) => (
-                                        <DropdownMenuItem
-                                            key={model.name}
-                                            className="text-primary hover:bg-primary/10 px-3 py-3 cursor-pointer"
-                                            onClick={() => setSelectedModel(model)}
-                                        >
-                                            <div className="flex items-center justify-between w-full">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
-                                                        {getModelIcon(model.name)}
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="font-medium text-sm">{model.name}</span>
-                                                        <span className="text-xs text-muted-foreground">
-                                                            {getProviderName(model.model)}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    {selectedModel?.model === model.model && (
-                                                        <div className="w-2 h-2 rounded-full bg-primary"></div>
-                                                    )}
-                                                    {model.isOpenRouter ? (
-                                                        <DollarSign className="h-4 w-4" />
-                                                    ) : (
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <span className="h-4 w-4 flex items-center justify-center text-muted-foreground cursor-pointer">
-                                                                    <Info className="h-4 w-4" />
-                                                                </span>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent side="right" className="text-xs">
-                                                                Free but rate limited
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </DropdownMenuItem>
-                                    ))}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                            <ModelSelector selectedModel={selectedModel ?? defaultModel} setSelectedModel={setSelectedModel} />
                         </div>
 
                         <div className="flex items-center gap-2">
