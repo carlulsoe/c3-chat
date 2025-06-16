@@ -11,7 +11,12 @@ export const models = [
   },
   {
     model: "deepseek/deepseek-r1-0528-qwen3-8b:free",
-    name: "DeepSeek R1 8b",
+    name: "DeepSeek R1 8b (Free)",
+    isOpenRouter: true,
+  },
+  {
+    model: "deepseek/deepseek-r1-0528",
+    name: "DeepSeek R1 671B",
     isOpenRouter: true,
   },
   {
