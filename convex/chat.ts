@@ -280,7 +280,7 @@ export const streamChat = httpAction(async (ctx, request) => {
       model && model.startsWith("gemini")
         ? google(model)
         : model
-          ? openrouterProvider(model)
+          ? openrouterProvider.chat(model)
           : google("gemini-2.0-flash");
 
     try {
