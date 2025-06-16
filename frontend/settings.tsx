@@ -9,6 +9,7 @@ import { Eye, EyeOff } from "lucide-react";
 export default function SettingsPage() {
   const [apiKey, setApiKey] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
+  const [saved, setSaved] = useState(false);
   const storedApiKey = useQuery(api.settings.getApiKey);
   const updateApiKey = useMutation(api.settings.updateApiKey);
   const navigate = useNavigate();
@@ -21,6 +22,8 @@ export default function SettingsPage() {
   const handleSave = async () => {
     await updateApiKey({ apiKey });
     setApiKey("");
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
   };
 
   // Handlers for hold-to-show
@@ -53,7 +56,10 @@ export default function SettingsPage() {
                   id="apiKey"
                   type={showApiKey ? "text" : "password"}
                   value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
+                  onChange={(e) => {
+                    setApiKey(e.target.value);
+                    setSaved(false);
+                  }}
                   placeholder="Enter your Open Router API Key"
                   className="w-full"
                 />
@@ -77,6 +83,9 @@ export default function SettingsPage() {
             <Button onClick={handleSave} className="mt-2 w-fit self-start">
               Save API Key
             </Button>
+            {saved && (
+              <span className="text-sm text-green-600 mt-2 ml-2">Saved!</span>
+            )}
           </div>
         </div>
       </div>
