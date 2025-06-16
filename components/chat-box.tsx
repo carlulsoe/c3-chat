@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { ChevronDown, ChevronUp } from "lucide-react"
+import { ChevronDown, ChevronUp, Bot, Sparkles, Brain, Zap, DollarSign } from "lucide-react"
 import { models } from "@/lib/models"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
@@ -21,6 +21,29 @@ interface ChatBoxProps {
     onSendMessage: (message: string, model: string) => void
     /** Optional placeholder text for the input field. Defaults to "Type your message here...". */
     placeholder?: string
+}
+
+/**
+ * Get the appropriate icon for a given model
+ */
+const getModelIcon = (modelName: string) => {
+    const name = modelName.toLowerCase()
+    if (name.includes('gemini')) return <Sparkles className="h-4 w-4" />
+    if (name.includes('deepseek')) return <Zap className="h-4 w-4" />
+    if (name.includes('claude')) return <Bot className="h-4 w-4" />
+    if (name.includes('o3') || name.includes('o4')) return <Brain className="h-4 w-4" />
+    return <Bot className="h-4 w-4" />
+}
+
+/**
+ * Get provider name from model string
+ */
+const getProviderName = (model: string) => {
+    if (model.includes('/')) {
+        const provider = model.split('/')[0]
+        return provider.charAt(0).toUpperCase() + provider.slice(1)
+    }
+    return 'Google'
 }
 
 /**
@@ -91,10 +114,38 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
                                         <ChevronDown className="h-4 w-4 ml-1" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent side="top" align="start" className="bg-background border-border">
+                                <DropdownMenuContent side="top" align="start" className="bg-background border-border w-80">
                                     {availableModels?.map((model) => (
-                                        <DropdownMenuItem key={model.name} className="text-primary hover:bg-primary/10" onClick={() => setSelectedModel(model)}>
-                                            {model.name}
+                                        <DropdownMenuItem
+                                            key={model.name}
+                                            className="text-primary hover:bg-primary/10 px-3 py-3 cursor-pointer"
+                                            onClick={() => setSelectedModel(model)}
+                                        >
+                                            <div className="flex items-center justify-between w-full">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
+                                                        {getModelIcon(model.name)}
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium text-sm">{model.name}</span>
+                                                        <span className="text-xs text-muted-foreground">
+                                                            {getProviderName(model.model)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    {selectedModel?.model === model.model && (
+                                                        <div className="w-2 h-2 rounded-full bg-primary"></div>
+                                                    )}
+                                                    {model.isOpenRouter ? (
+                                                        <DollarSign className="h-4 w-4" />
+                                                    ) : (
+                                                        <span className="h-4 w-4 flex items-center justify-center text-muted-foreground">
+                                                            <span className="text-xs font-bold">Free</span>
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </DropdownMenuItem>
                                     ))}
                                 </DropdownMenuContent>
