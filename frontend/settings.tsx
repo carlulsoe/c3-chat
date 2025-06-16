@@ -4,16 +4,27 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useNavigate } from "react-router";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Trash2, AlertTriangle } from "lucide-react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function SettingsPage() {
   const [apiKey, setApiKey] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [showClearDialog, setShowClearDialog] = useState(false);
   const storedApiKey = useQuery(api.settings.getApiKey);
   const updateApiKey = useMutation(api.settings.updateApiKey);
   const clearApiKey = useMutation(api.settings.clearApiKey);
   const navigate = useNavigate();
+
   useEffect(() => {
     if (storedApiKey !== undefined && apiKey === "") {
       setApiKey(storedApiKey ?? "");
@@ -23,14 +34,11 @@ export default function SettingsPage() {
   const handleSave = async () => {
     await updateApiKey({ apiKey });
     setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    setTimeout(() => setSaved(false), 2000);
   };
 
   const handleClear = async () => {
-    // Show a modal to confirm clearing the API key
-    if (!window.confirm("Are you sure you want to clear your Open Router API key? This action cannot be undone.")) {
-      return;
-    }
+    setShowClearDialog(false);
     await clearApiKey({});
     setApiKey("");
   };
@@ -90,23 +98,59 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="flex flex-row items-center gap-3 w-full justify-between">
-              <Button onClick={handleSave} className=" w-fit self-start">
-                Save API Key
+              <Button
+                onClick={handleSave}
+                className={`w-fit self-start`}
+              >
+                {saved ? "Saved!" : "Save API Key"}
               </Button>
-              {saved && (
-                <span className="text-sm text-green-600 mt-2 ml-2">Saved!</span>
-              )}
               <Button
                 variant="destructive"
                 className="w-fit self-start"
-                onClick={handleClear}
+                onClick={() => setShowClearDialog(true)}
               >
+                <Trash2 size={16} className="mr-2" />
                 Clear API Key
               </Button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Clear API Key Confirmation Dialog */}
+      <Dialog open={showClearDialog} onOpenChange={setShowClearDialog}>
+        <DialogContent className="sm:max-w-md" showCloseButton={false}>
+          <DialogHeader className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+              <AlertTriangle className="h-6 w-6 text-destructive" />
+            </div>
+            <DialogTitle className="text-xl">Clear API Key</DialogTitle>
+            <DialogDescription className="text-left">
+              Are you sure you want to clear your Open Router API key? This action cannot be undone and you&apos;ll need to re-enter your key to continue using the application.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="justify-between w-full flex flex-row gap-2">
+
+            <Button
+              variant="destructive"
+              onClick={handleClear}
+              className="w-full sm:w-auto"
+            >
+              <Trash2 size={16} className="mr-2" />
+              Clear API Key
+            </Button>
+            <DialogClose asChild>
+              <Button
+                variant="outline"
+                onClick={() => setShowClearDialog(false)}
+                className="w-full sm:w-auto"
+              >
+                Cancel
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
