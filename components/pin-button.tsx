@@ -11,7 +11,7 @@ export function PinButton({ threadId, isPinned }: { threadId: string, isPinned?:
         <Button
             type="button"
             variant="ghost"
-            className="ml-2 hover:bg-primary/10 rounded-full p-0"
+            className="hover:bg-primary/10 rounded-full p-0"
             title={isPinned ? "Unpin" : "Pin"}
             onClick={async (e) => {
                 e.stopPropagation();

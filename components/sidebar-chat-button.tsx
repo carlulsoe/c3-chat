@@ -15,13 +15,14 @@ export function SidebarChatButton({ selectedChat, thread, isPinned }: SidebarCha
         <SidebarMenuButton
             asChild
             isActive={selectedChat === thread._id.toString()}
+            className="pl-0"
         >
             <div className="relative w-full">
                 <NavLink
                     to={`/chat/${thread._id.toString()}`}
-                    className="flex items-center w-full pr-6 py-2 truncate text-left"
+                    className="flex items-center w-full py-2 pl-2 truncate text-left"
                 >
-                    <span className="truncate">{thread.title}</span>
+                    <span>{thread.title}</span>
                 </NavLink>
                 <div className="absolute right-1 top-1/2 -translate-y-1/2">
                     <PinButton threadId={thread._id} isPinned={isPinned} />
