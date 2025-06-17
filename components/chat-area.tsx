@@ -1,11 +1,10 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useUser } from "@clerk/nextjs"
-import ChatBox from "./chat-box"
+import { ChatBox } from "./chat-box"
 import { api } from "@/convex/_generated/api"
 import { useMutation } from 'convex/react';
 import { Id } from "@/convex/_generated/dataModel"

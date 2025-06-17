@@ -27,7 +27,7 @@ interface ChatBoxProps {
  * ChatBox is the component that provides the text input area for users to type and send messages.
  * It also includes options for selecting a model and attaching files (though file attachment is a placeholder).
  */
-const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMessage, placeholder = "Type your message here..." }) => {
+export function ChatBox({ inputValue, setInputValue, onSendMessage, placeholder = "Type your message here..." }: ChatBoxProps) {
     // Fetch the user's OpenRouter API key (null if not set, undefined while loading)
     const apiKey = useQuery(api.settings.getApiKey, {})
 
@@ -103,5 +103,3 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
         </div>
     )
 }
-
-export default ChatBox
