@@ -4,6 +4,7 @@ import { ChatArea } from "@/components/chat-area"
 import { AppSidebar } from "@/components/sidebar"
 import { SidebarTrigger, useSidebar } from "./ui/sidebar"
 import { Doc } from "@/convex/_generated/dataModel"
+import { ModeToggle } from "./ui/theme-selector"
 
 /**
  * ChatInterface is the main component for the chat application.
@@ -15,7 +16,14 @@ export default function ChatInterface({ messages }: { messages: Doc<"threadMessa
         <div className="flex h-screen w-full bg-background">
             <AppSidebar />
             <div className="flex flex-col w-full h-full">
-                <SidebarTrigger hidden={open} className="hover:bg-primary/10 ml-2 mt-3" />
+                <div className="flex justify-between">
+                    <div className="flex justify-start">
+                        <SidebarTrigger hidden={open} className="hover:bg-primary/10 ml-2 mt-3" />
+                    </div>
+                    <div className="flex justify-end mt-3 mr-2">
+                        <ModeToggle />
+                    </div>
+                </div>
                 <ChatArea messages={messages} />
             </div>
         </div>

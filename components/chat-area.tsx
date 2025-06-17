@@ -55,7 +55,7 @@ export function ChatArea({ messages }: ChatAreaProps) {
     }
 
     return (
-        <div className="flex-1 flex flex-col w-full h-full pt-8" >
+        <div className="flex-1 flex flex-col w-full h-full" >
             <ScrollArea className="flex-1">
                 {messages.length === 0 && inputValue.length === 0 ? (
                     <ExampleQuestions onSelect={setInputValue} firstName={user.user?.firstName} />
