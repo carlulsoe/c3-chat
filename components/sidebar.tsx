@@ -26,6 +26,7 @@ import { NavLink } from "react-router"
 import { Doc } from "@/convex/_generated/dataModel"
 import { useStableLocalStoragePaginatedQuery } from "@/hooks/useStableQuery"
 import { SidebarChatButton } from "./sidebar-chat-button"
+import Fuse from "fuse.js"
 
 
 export function AppSidebar() {
@@ -41,28 +42,40 @@ export function AppSidebar() {
 
     // Search query state for filtering threads
     const [searchQuery, setSearchQuery] = useState("")
-    const normalizedSearchQuery = searchQuery.toLowerCase()
+    const normalizedSearchQuery = searchQuery.trim()
 
     const recentThreads: Doc<"thread">[] = (results ?? []).filter((chat) => new Date(chat.updatedAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
 
     const olderThreads: Doc<"thread">[] = (results ?? []).filter((chat) => new Date(chat.updatedAt) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
 
-    // Apply search filter to thread arrays
+    // Fuse.js options for fuzzy searching thread titles
+    const fuseOptions = useMemo(() => ({
+        keys: ["title"],
+        threshold: 0.4,
+        includeScore: false,
+    }), [])
+
+    // Create Fuse instances for each thread bucket
+    const fusePinned = useMemo(() => new Fuse(pinnedThreads ?? [], fuseOptions), [pinnedThreads, fuseOptions])
+    const fuseRecent = useMemo(() => new Fuse(recentThreads ?? [], fuseOptions), [recentThreads, fuseOptions])
+    const fuseOlder = useMemo(() => new Fuse(olderThreads ?? [], fuseOptions), [olderThreads, fuseOptions])
+
+    // Apply search filter to thread arrays using Fuse.js
     const filteredPinnedThreads = useMemo(() => {
         if (!pinnedThreads) return []
         if (!normalizedSearchQuery) return pinnedThreads
-        return pinnedThreads.filter((thread) => thread.title.toLowerCase().includes(normalizedSearchQuery))
-    }, [pinnedThreads, normalizedSearchQuery])
+        return fusePinned.search(normalizedSearchQuery).map((res) => res.item)
+    }, [pinnedThreads, normalizedSearchQuery, fusePinned])
 
     const filteredRecentThreads = useMemo(() => {
         if (!normalizedSearchQuery) return recentThreads
-        return recentThreads.filter((thread) => thread.title.toLowerCase().includes(normalizedSearchQuery))
-    }, [recentThreads, normalizedSearchQuery])
+        return fuseRecent.search(normalizedSearchQuery).map((res) => res.item)
+    }, [recentThreads, normalizedSearchQuery, fuseRecent])
 
     const filteredOlderThreads = useMemo(() => {
         if (!normalizedSearchQuery) return olderThreads
-        return olderThreads.filter((thread) => thread.title.toLowerCase().includes(normalizedSearchQuery))
-    }, [olderThreads, normalizedSearchQuery])
+        return fuseOlder.search(normalizedSearchQuery).map((res) => res.item)
+    }, [olderThreads, normalizedSearchQuery, fuseOlder])
 
     const sidebarContentRef = useRef<HTMLDivElement>(null)
 
