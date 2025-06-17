@@ -70,7 +70,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ inputValue, setInputValue, onSendMess
     }
 
     return (
-        <div className="py-6 bg-background w-full max-w-3xl mx-auto">
+        <div className="bg-background w-full max-w-3xl mx-auto">
             <form onSubmit={handleSendMessage} className="relative">
                 <div className="bg-background rounded-lg border border-border">
                     <textarea
