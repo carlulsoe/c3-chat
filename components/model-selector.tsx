@@ -32,7 +32,7 @@ const getProviderName = (model: string) => {
     return 'Google'
 }
 
-export const defaultModel: Model = models.find((model) => model.model === "gemini-2.5-flash-preview-04-17")!
+export const defaultModel: Model = models.find((model) => model.model === "gemini-2.5-flash")!
 
 export function ModelSelector({ selectedModel, setSelectedModel }: ModelSelectorProps) {
     return (
