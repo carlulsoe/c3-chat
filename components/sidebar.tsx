@@ -75,11 +75,11 @@ export function AppSidebar() {
                     <SidebarTrigger />
                     <h1 className="text-lg font-semibold text-foreground">C3 Chat</h1>
                 </div>
-                <Button asChild className="w-full bg-primary hover:bg-primary/90 text-white mt-2">
+                <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground mt-2">
                     <NavLink to="/">New Chat</NavLink>
                 </Button>
                 <div className="relative mt-2">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                     <SidebarInput placeholder="Search your threads..." className="pl-8" />
                 </div>
             </SidebarHeader>
@@ -87,7 +87,7 @@ export function AppSidebar() {
                 <div ref={sidebarContentRef} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 120px)' }}>
                     <SidebarGroup>
                         <SidebarGroupLabel>
-                            <div className="flex items-center text-xs text-gray-400">
+                            <div className="flex items-center text-xs text-muted-foreground">
                                 <PinIcon className="h-3 w-3 mr-1" /> Pinned
                             </div>
                         </SidebarGroupLabel>
@@ -136,7 +136,7 @@ export function AppSidebar() {
                         </NavLink>
                     </SidebarMenuButton>
                 )}
-                <div className="flex items-center mt-2"> {/* Added mt-2 for spacing */}
+                <div className="flex items-center mt-2">
                     <UserButton />
                     <div className="ml-2">
                         <div className="text-sm font-medium">{user?.fullName}</div>
