@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { PinIcon, Search, SettingsIcon } from "lucide-react"
-import React, { useRef, useEffect } from "react"
+import React, { useRef, useEffect, useState, useMemo } from "react"
 import { UserButton, useUser } from "@clerk/nextjs"
 import { useParams } from "react-router"
 import { useQuery } from "convex/react"
@@ -39,9 +39,30 @@ export function AppSidebar() {
     const { setOpenMobile, isMobile } = useSidebar()
     const pinnedThreads = useQuery(api.chat.getPinnedUserThreads)
 
+    // Search query state for filtering threads
+    const [searchQuery, setSearchQuery] = useState("")
+    const normalizedSearchQuery = searchQuery.toLowerCase()
+
     const recentThreads: Doc<"thread">[] = (results ?? []).filter((chat) => new Date(chat.updatedAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
 
     const olderThreads: Doc<"thread">[] = (results ?? []).filter((chat) => new Date(chat.updatedAt) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
+
+    // Apply search filter to thread arrays
+    const filteredPinnedThreads = useMemo(() => {
+        if (!pinnedThreads) return []
+        if (!normalizedSearchQuery) return pinnedThreads
+        return pinnedThreads.filter((thread) => thread.title.toLowerCase().includes(normalizedSearchQuery))
+    }, [pinnedThreads, normalizedSearchQuery])
+
+    const filteredRecentThreads = useMemo(() => {
+        if (!normalizedSearchQuery) return recentThreads
+        return recentThreads.filter((thread) => thread.title.toLowerCase().includes(normalizedSearchQuery))
+    }, [recentThreads, normalizedSearchQuery])
+
+    const filteredOlderThreads = useMemo(() => {
+        if (!normalizedSearchQuery) return olderThreads
+        return olderThreads.filter((thread) => thread.title.toLowerCase().includes(normalizedSearchQuery))
+    }, [olderThreads, normalizedSearchQuery])
 
     const sidebarContentRef = useRef<HTMLDivElement>(null)
 
@@ -86,7 +107,12 @@ export function AppSidebar() {
                 </Button>
                 <div className="relative mt-2">
                     <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <SidebarInput placeholder="Search your threads..." className="pl-8" />
+                    <SidebarInput
+                        placeholder="Search your threads..."
+                        className="pl-8"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.currentTarget.value)}
+                    />
                 </div>
             </SidebarHeader>
             <SidebarContent>
@@ -99,7 +125,7 @@ export function AppSidebar() {
                         </SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
-                                {pinnedThreads?.map((thread) => (
+                                {filteredPinnedThreads?.map((thread) => (
                                     <SidebarMenuItem key={thread._id.toString()}>
                                         <SidebarChatButton selectedChat={selectedChat} thread={thread} isPinned={thread.pinned} />
                                     </SidebarMenuItem>
@@ -111,7 +137,7 @@ export function AppSidebar() {
                         <SidebarGroupLabel>Last 7 Days</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
-                                {recentThreads?.map((thread) => (
+                                {filteredRecentThreads?.map((thread) => (
                                     <SidebarMenuItem key={thread._id.toString()}>
                                         <SidebarChatButton selectedChat={selectedChat} thread={thread} isPinned={thread.pinned} />
                                     </SidebarMenuItem>
@@ -123,7 +149,7 @@ export function AppSidebar() {
                         <SidebarGroupLabel>Last 30 Days</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
-                                {olderThreads.map((thread) => (
+                                {filteredOlderThreads.map((thread) => (
                                     <SidebarMenuItem key={thread._id.toString()}>
                                         <SidebarChatButton selectedChat={selectedChat} thread={thread} isPinned={thread.pinned} />
                                     </SidebarMenuItem>
