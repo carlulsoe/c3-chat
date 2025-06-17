@@ -52,7 +52,7 @@ export default function SettingsPage() {
       {/* Back button in top-left, outside centering flex */}
       <div className="absolute top-4 left-4 z-10">
         <Button variant="ghost" onMouseDown={() => navigate("/")}
-          className="mb-2">
+          className="mb-2 cursor-pointer">
           <span className="mr-2">←</span> Back
         </Button>
       </div>
@@ -92,6 +92,7 @@ export default function SettingsPage() {
                   onTouchEnd={handleShowUp}
                   onTouchCancel={handleShowUp}
                   tabIndex={-1}
+                  className="cursor-pointer"
                 >
                   {showApiKey ? <EyeOff size={18} /> : <Eye size={18} />}
                 </Button>
@@ -100,13 +101,13 @@ export default function SettingsPage() {
             <div className="flex flex-row items-center gap-3 w-full justify-between">
               <Button
                 onMouseDown={handleSave}
-                className={`w-fit self-start`}
+                className={`w-fit self-start cursor-pointer`}
               >
                 {saved ? "Saved!" : "Save API Key"}
               </Button>
               <Button
                 variant="destructive"
-                className="w-fit self-start"
+                className="w-fit self-start cursor-pointer"
                 onMouseDown={() => setShowClearDialog(true)}
               >
                 <Trash2 size={16} className="mr-2" />
@@ -134,8 +135,8 @@ export default function SettingsPage() {
             <div className="flex-1 flex justify-start">
               <Button
                 variant="destructive"
-                onMouseDown={handleClear}
-                className="w-full sm:w-auto"
+                onClick={handleClear} // Should be onClick since it is a destructive action
+                className="w-full sm:w-auto cursor-pointer"
               >
                 <Trash2 size={16} className="mr-2" />
                 Clear API Key
@@ -145,7 +146,7 @@ export default function SettingsPage() {
               <Button
                 variant="outline"
                 onMouseDown={() => setShowClearDialog(false)}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto cursor-pointer"
               >
                 Cancel
               </Button>

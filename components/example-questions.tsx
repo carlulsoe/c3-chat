@@ -45,19 +45,19 @@ export function ExampleQuestions({ onSelect, firstName }: ExampleQuestionsProps)
             <h1 className="text-2xl font-bold mb-8">How can I help you{firstName ? `, ${firstName}` : ""}?</h1>
 
             <div className="flex gap-4 mb-12">
-                <Button variant={selectedCategory === "Create" ? "default" : "outline"} className="flex flex-col h-20 w-24 items-center justify-center gap-2" onMouseDown={() => setSelectedCategory("Create")}>
+                <Button variant={selectedCategory === "Create" ? "default" : "outline"} className="flex flex-col h-20 w-24 items-center justify-center gap-2 cursor-pointer" onMouseDown={() => setSelectedCategory("Create")}>
                     <Sparkles className="h-5 w-5" />
                     <span>Create</span>
                 </Button>
-                <Button variant={selectedCategory === "Explore" ? "default" : "outline"} className="flex flex-col h-20 w-24 items-center justify-center gap-2" onMouseDown={() => setSelectedCategory("Explore")}>
+                <Button variant={selectedCategory === "Explore" ? "default" : "outline"} className="flex flex-col h-20 w-24 items-center justify-center gap-2 cursor-pointer" onMouseDown={() => setSelectedCategory("Explore")}>
                     <Compass className="h-5 w-5" />
                     <span>Explore</span>
                 </Button>
-                <Button variant={selectedCategory === "Code" ? "default" : "outline"} className="flex flex-col h-20 w-24 items-center justify-center gap-2" onMouseDown={() => setSelectedCategory("Code")}>
+                <Button variant={selectedCategory === "Code" ? "default" : "outline"} className="flex flex-col h-20 w-24 items-center justify-center gap-2 cursor-pointer" onMouseDown={() => setSelectedCategory("Code")}>
                     <Code className="h-5 w-5" />
                     <span>Code</span>
                 </Button>
-                <Button variant={selectedCategory === "Learn" ? "default" : "outline"} className="flex flex-col h-20 w-24 items-center justify-center gap-2" onMouseDown={() => setSelectedCategory("Learn")}>
+                <Button variant={selectedCategory === "Learn" ? "default" : "outline"} className="flex flex-col h-20 w-24 items-center justify-center gap-2 cursor-pointer" onMouseDown={() => setSelectedCategory("Learn")}>
                     <BookOpen className="h-5 w-5" />
                     <span>Learn</span>
                 </Button>
@@ -68,7 +68,7 @@ export function ExampleQuestions({ onSelect, firstName }: ExampleQuestionsProps)
                     <Button
                         key={index}
                         variant="ghost"
-                        className="w-full justify-start text-foreground hover:bg-muted"
+                        className="w-full justify-start text-foreground hover:bg-muted cursor-pointer"
                         onMouseDown={() => {
                             onSelect(question)
                         }}
