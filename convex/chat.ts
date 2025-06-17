@@ -76,7 +76,7 @@ export const generateThreadTitle = internalAction({
   },
   handler: async (ctx, args) => {
     const { object } = await generateObject({
-      model: google("gemini-2.0-flash"),
+      model: google("gemini-2.5-flash-lite-preview-06-17"),
       system: "Generate a title for a new chat",
       messages: [
         {
