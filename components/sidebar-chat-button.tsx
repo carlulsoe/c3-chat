@@ -24,7 +24,7 @@ export function SidebarChatButton({ selectedChat, thread, isPinned }: SidebarCha
                 >
                     <span>{thread.title}</span>
                 </NavLink>
-                <div className="absolute right-1 top-1/2 -translate-y-1/2">
+                <div className="">
                     <PinButton threadId={thread._id} isPinned={isPinned} />
                 </div>
             </div>
