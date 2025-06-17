@@ -13,6 +13,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarTrigger,
+    useSidebar,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { PinIcon, Search, SettingsIcon } from "lucide-react"
@@ -35,6 +36,7 @@ export function AppSidebar() {
     const { results, status, loadMore } = useStableLocalStoragePaginatedQuery(api.chat.getUserThreads, user ? { paginationOpts: { numItems: 20 } } : "skip", {
         initialNumItems: 20,
     })
+    const { setOpenMobile, isMobile } = useSidebar()
     const pinnedThreads = useQuery(api.chat.getPinnedUserThreads)
 
     const recentThreads: Doc<"thread">[] = (results ?? []).filter((chat) => new Date(chat.updatedAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
@@ -76,7 +78,11 @@ export function AppSidebar() {
                     <h1 className="text-lg font-semibold text-foreground">C3 Chat</h1>
                 </div>
                 <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground mt-2">
-                    <NavLink to="/">New Chat</NavLink>
+                    <NavLink to="/" onClick={async () => {
+                        if (isMobile) {
+                            setTimeout(() => setOpenMobile(false), 100)
+                        }
+                    }}>New Chat</NavLink>
                 </Button>
                 <div className="relative mt-2">
                     <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
