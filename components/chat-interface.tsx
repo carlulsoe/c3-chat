@@ -15,7 +15,7 @@ export default function ChatInterface({ messages }: { messages: Doc<"threadMessa
         <div className="flex h-screen w-full bg-background">
             <AppSidebar />
             <div className="flex flex-col w-full h-full">
-                <SidebarTrigger hidden={open} />
+                <SidebarTrigger hidden={open} className="hover:bg-primary/10 ml-2 mt-3" />
                 <ChatArea messages={messages} />
             </div>
         </div>
