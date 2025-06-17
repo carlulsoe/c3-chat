@@ -48,7 +48,7 @@ export function ModelSelector({ selectedModel, setSelectedModel }: ModelSelector
                     <DropdownMenuItem
                         key={model.name}
                         className="text-primary hover:bg-primary/10 px-3 py-3 cursor-pointer"
-                        onClick={() => setSelectedModel(model)}
+                        onMouseDown={() => setSelectedModel(model)}
                     >
                         <div className="flex items-center justify-between w-full">
                             <div className="flex items-center gap-3">

@@ -50,7 +50,7 @@ export function PinButton({ threadId, isPinned }: { threadId: string, isPinned?:
             variant="ghost"
             className="hover:bg-primary/10 rounded-full p-0 m-0"
             title={isPinned ? "Unpin" : "Pin"}
-            onClick={async (e) => {
+            onMouseDown={async (e) => {
                 e.stopPropagation();
                 await setThreadPinned({ threadId: threadId as Id<'thread'>, pinned: !isPinned })
             }}

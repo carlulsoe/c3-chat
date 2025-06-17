@@ -51,7 +51,7 @@ export default function SettingsPage() {
     <div className="relative min-h-screen w-full bg-background">
       {/* Back button in top-left, outside centering flex */}
       <div className="absolute top-4 left-4 z-10">
-        <Button variant="ghost" onClick={() => navigate("/")}
+        <Button variant="ghost" onMouseDown={() => navigate("/")}
           className="mb-2">
           <span className="mr-2">←</span> Back
         </Button>
@@ -99,7 +99,7 @@ export default function SettingsPage() {
             </div>
             <div className="flex flex-row items-center gap-3 w-full justify-between">
               <Button
-                onClick={handleSave}
+                onMouseDown={handleSave}
                 className={`w-fit self-start`}
               >
                 {saved ? "Saved!" : "Save API Key"}
@@ -107,7 +107,7 @@ export default function SettingsPage() {
               <Button
                 variant="destructive"
                 className="w-fit self-start"
-                onClick={() => setShowClearDialog(true)}
+                onMouseDown={() => setShowClearDialog(true)}
               >
                 <Trash2 size={16} className="mr-2" />
                 Clear API Key
@@ -134,7 +134,7 @@ export default function SettingsPage() {
             <div className="flex-1 flex justify-start">
               <Button
                 variant="destructive"
-                onClick={handleClear}
+                onMouseDown={handleClear}
                 className="w-full sm:w-auto"
               >
                 <Trash2 size={16} className="mr-2" />
@@ -144,7 +144,7 @@ export default function SettingsPage() {
             <DialogClose asChild>
               <Button
                 variant="outline"
-                onClick={() => setShowClearDialog(false)}
+                onMouseDown={() => setShowClearDialog(false)}
                 className="w-full sm:w-auto"
               >
                 Cancel
