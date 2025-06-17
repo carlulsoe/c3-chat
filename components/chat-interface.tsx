@@ -11,7 +11,7 @@ import { ModeToggle } from "./ui/theme-selector"
  * It integrates the sidebar for navigation and the chat area for displaying messages and user input.
  */
 export default function ChatInterface({ messages }: { messages: Doc<"threadMessage">[] }) {
-    const { state } = useSidebar()
+    const { state, isMobile } = useSidebar()
 
     return (
         <div className="flex h-screen w-full bg-background">
@@ -19,7 +19,7 @@ export default function ChatInterface({ messages }: { messages: Doc<"threadMessa
             <div className="flex flex-col w-full h-full">
                 <div className="flex justify-between">
                     <div className="flex justify-start">
-                        <SidebarTrigger hidden={state === "expanded"} className="hover:bg-primary/10 ml-2 mt-3" />
+                        <SidebarTrigger hidden={state === "expanded" && !isMobile} className="hover:bg-primary/10 ml-2 mt-3" />
                     </div>
                     <div className="justify-end mt-3 mr-2 mb-2">
                         <ModeToggle />

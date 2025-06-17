@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
 
-import { SidebarMenuButton } from "./ui/sidebar";
+import { SidebarMenuButton, useSidebar } from "./ui/sidebar";
 import { Doc } from "@/convex/_generated/dataModel";
 import { PinButton } from "./pin-button";
 
@@ -11,6 +11,7 @@ interface SidebarChatButtonProps {
 }
 
 export function SidebarChatButton({ selectedChat, thread, isPinned }: SidebarChatButtonProps) {
+    const { setOpenMobile, isMobile } = useSidebar()
     return (
         <SidebarMenuButton
             asChild
@@ -19,7 +20,13 @@ export function SidebarChatButton({ selectedChat, thread, isPinned }: SidebarCha
         >
             <div className="relative w-full">
                 <NavLink
+                    prefetch="intent"
                     to={`/chat/${thread._id.toString()}`}
+                    onClick={async () => {
+                        if (isMobile) {
+                            setTimeout(() => setOpenMobile(false), 100)
+                        }
+                    }}
                     className="flex items-center w-full py-2 pl-2 truncate text-left"
                 >
                     <span>{thread.title}</span>
